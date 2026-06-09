@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Costeo Estructurado y Cash Flow Industrial</title>
+    <title>Costeo Estructurado y Margen por Producto</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -65,7 +65,7 @@
                 <div class="flex items-center gap-2">
                     <span class="text-2xl">⚙️</span>
                     <div>
-                        <h1 class="text-base sm:text-lg font-bold tracking-tight">Cotizador de Flotas y Cash Flow Cronológico</h1>
+                        <h1 class="text-base sm:text-lg font-bold tracking-tight">Matriz de Cotización y Multi Cash Flow</h1>
                         <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-slate-400">
                             <span id="status-dot" class="w-2 h-2 rounded-full bg-gray-500"></span>
                             <span id="status-text">Detectando conexión...</span>
@@ -78,29 +78,29 @@
             </div>
         </header>
 
-        <main class="max-w-7xl mx-auto p-2 sm:p-4 grid grid-cols-1 xl:grid-cols-3 gap-4 flex-grow w-full">
+        <main class="max-w-7xl mx-auto p-2 sm:p-4 grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 flex-grow w-full">
             
             <div class="xl:col-span-2 space-y-4">
                 
                 <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800/80 shadow-lg space-y-4">
                     <h3 class="text-sm font-bold text-blue-400 flex items-center gap-2">
-                        <i class="fa-solid fa-layer-group"></i> Configuración de Equipos y Curva de Inversión
+                        <i class="fa-solid fa-layer-group"></i> 1. Costeo de Fábrica y Plazos
                     </h3>
 
                     <div class="bg-slate-950/80 p-2.5 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                        <span class="font-semibold text-slate-300"><i class="fa-solid fa-clock text-blue-400 mr-1"></i> Mes Base de Referencia de Fábrica:</span>
+                        <span class="font-semibold text-slate-300"><i class="fa-solid fa-clock text-blue-400 mr-1"></i> Mes Base de Arranque de Producción:</span>
                         <input type="date" id="fecha-base-global" onchange="calcularTodo()" class="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-slate-200 focus:outline-none w-full sm:w-40">
                     </div>
                     
                     <div class="p-3 bg-slate-950/40 rounded-xl border border-slate-800" id="box-cosechadora">
-                        <div class="flex flex-col sm:flex-row justify-between gap-2 border-b border-slate-800/80 pb-2.5">
+                        <div class="flex flex-col sm:flex-row justify-between gap-2 border-b border-slate-800/80 pb-2">
                             <label class="flex items-center gap-2 font-bold text-xs cursor-pointer text-slate-200">
                                 <input type="checkbox" id="chk-cosechadora" onchange="toggleMaquina('cosechadora')" class="rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-0 w-4 h-4">
                                 1. Cosechadora
                             </label>
                             <div class="grid grid-cols-2 gap-2 w-full sm:w-auto">
                                 <div class="flex items-center gap-1">
-                                    <span class="text-[10px] text-slate-400">Cant:</span>
+                                    <span class="text-[10px] text-slate-400">Qty:</span>
                                     <input type="number" id="qty-cosechadora" value="1" min="1" disabled oninput="calcularTodo()" class="bg-slate-900 border border-slate-700 rounded-lg py-0.5 px-1 text-xs text-center w-12 font-black text-blue-400 focus:outline-none">
                                 </div>
                                 <div class="flex items-center gap-1">
@@ -109,29 +109,29 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="desglose-cosechadora" class="space-y-2.5 hidden pt-2.5">
+                        <div id="desglose-cosechadora" class="space-y-2 hidden pt-2">
                             <div class="grid grid-cols-4 gap-1.5 text-[9px] text-slate-400">
                                 <div><label class="block mb-0.5">Carrocería %</label><input type="number" id="pct-cosechadora-g1" value="15" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-0.5 text-center text-rose-400 focus:outline-none"></div>
                                 <div><label class="block mb-0.5">Críticos %</label><input type="number" id="pct-cosechadora-g2" value="55" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-0.5 text-center text-blue-400 focus:outline-none"></div>
                                 <div><label class="block mb-0.5">Menores %</label><input type="number" id="pct-cosechadora-g3" value="20" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-0.5 text-center text-amber-400 focus:outline-none"></div>
                                 <div><label class="block mb-0.5">Minúsculos %</label><input type="number" id="pct-cosechadora-g4" value="10" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-0.5 text-center text-emerald-400 focus:outline-none"></div>
                             </div>
-                            <div class="grid grid-cols-2 gap-2 text-[11px] bg-slate-950/60 p-2 rounded-lg border border-slate-900">
-                                <div><label class="block text-slate-400 mb-0.5">Plazo (Meses - Recom: 8)</label><input type="number" id="meses-cosechadora" value="8" min="1" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md px-2 py-0.5 focus:outline-none text-slate-200"></div>
+                            <div class="grid grid-cols-2 gap-2 text-[10px] bg-slate-950/60 p-2 rounded-lg">
+                                <div><label class="block text-slate-400 mb-0.5">Plazo (Meses)</label><input type="number" id="meses-cosechadora" value="8" min="1" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md px-2 py-0.5 focus:outline-none text-slate-200"></div>
                                 <div><label class="block text-slate-400 mb-0.5">Desfase Inicio (Meses)</label><input type="number" id="desfase-cosechadora" value="0" min="0" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md px-2 py-0.5 focus:outline-none text-slate-200"></div>
                             </div>
                         </div>
                     </div>
                     
                     <div class="p-3 bg-slate-950/40 rounded-xl border border-slate-800" id="box-arrancadora">
-                        <div class="flex flex-col sm:flex-row justify-between gap-2 border-b border-slate-800/80 pb-2.5">
+                        <div class="flex flex-col sm:flex-row justify-between gap-2 border-b border-slate-800/80 pb-2">
                             <label class="flex items-center gap-2 font-bold text-xs cursor-pointer text-slate-200">
                                 <input type="checkbox" id="chk-arrancadora" onchange="toggleMaquina('arrancadora')" class="rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-0 w-4 h-4">
                                 2. Arrancadora
                             </label>
                             <div class="grid grid-cols-2 gap-2 w-full sm:w-auto">
                                 <div class="flex items-center gap-1">
-                                    <span class="text-[10px] text-slate-400">Cant:</span>
+                                    <span class="text-[10px] text-slate-400">Qty:</span>
                                     <input type="number" id="qty-arrancadora" value="1" min="1" disabled oninput="calcularTodo()" class="bg-slate-900 border border-slate-700 rounded-lg py-0.5 px-1 text-xs text-center w-12 font-black text-blue-400 focus:outline-none">
                                 </div>
                                 <div class="flex items-center gap-1">
@@ -140,29 +140,29 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="desglose-arrancadora" class="space-y-2.5 hidden pt-2.5">
+                        <div id="desglose-arrancadora" class="space-y-2 hidden pt-2">
                             <div class="grid grid-cols-4 gap-1.5 text-[9px] text-slate-400">
                                 <div><label class="block mb-0.5">Carrocería %</label><input type="number" id="pct-arrancadora-g1" value="25" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-0.5 text-center text-rose-400 focus:outline-none"></div>
                                 <div><label class="block mb-0.5">Críticos %</label><input type="number" id="pct-arrancadora-g2" value="45" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-0.5 text-center text-blue-400 focus:outline-none"></div>
                                 <div><label class="block mb-0.5">Menores %</label><input type="number" id="pct-arrancadora-g3" value="20" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-0.5 text-center text-amber-400 focus:outline-none"></div>
                                 <div><label class="block mb-0.5">Minúsculos %</label><input type="number" id="pct-arrancadora-g4" value="10" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-0.5 text-center text-emerald-400 focus:outline-none"></div>
                             </div>
-                            <div class="grid grid-cols-2 gap-2 text-[11px] bg-slate-950/60 p-2 rounded-lg border border-slate-900">
-                                <div><label class="block text-slate-400 mb-0.5">Plazo (Meses - Recom: 8)</label><input type="number" id="meses-arrancadora" value="8" min="1" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md px-2 py-0.5 focus:outline-none text-slate-200"></div>
+                            <div class="grid grid-cols-2 gap-2 text-[10px] bg-slate-950/60 p-2 rounded-lg">
+                                <div><label class="block text-slate-400 mb-0.5">Plazo (Meses)</label><input type="number" id="meses-arrancadora" value="8" min="1" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md px-2 py-0.5 focus:outline-none text-slate-200"></div>
                                 <div><label class="block text-slate-400 mb-0.5">Desfase Inicio (Meses)</label><input type="number" id="desfase-arrancadora" value="0" min="0" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md px-2 py-0.5 focus:outline-none text-slate-200"></div>
                             </div>
                         </div>
                     </div>
 
                     <div class="p-3 bg-slate-950/40 rounded-xl border border-slate-800" id="box-volquete11">
-                        <div class="flex flex-col sm:flex-row justify-between gap-2 border-b border-slate-800/80 pb-2.5">
+                        <div class="flex flex-col sm:flex-row justify-between gap-2 border-b border-slate-800/80 pb-2">
                             <label class="flex items-center gap-2 font-bold text-xs cursor-pointer text-slate-200">
                                 <input type="checkbox" id="chk-volquete11" onchange="toggleMaquina('volquete11')" class="rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-0 w-4 h-4">
                                 3. Volquete 11 Toneladas
                             </label>
                             <div class="grid grid-cols-2 gap-2 w-full sm:w-auto">
                                 <div class="flex items-center gap-1">
-                                    <span class="text-[10px] text-slate-400">Cant:</span>
+                                    <span class="text-[10px] text-slate-400">Qty:</span>
                                     <input type="number" id="qty-volquete11" value="1" min="1" disabled oninput="calcularTodo()" class="bg-slate-900 border border-slate-700 rounded-lg py-0.5 px-1 text-xs text-center w-12 font-black text-blue-400 focus:outline-none">
                                 </div>
                                 <div class="flex items-center gap-1">
@@ -171,14 +171,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="desglose-volquete11" class="space-y-2.5 hidden pt-2.5">
+                        <div id="desglose-volquete11" class="space-y-2 hidden pt-2">
                             <div class="grid grid-cols-4 gap-1.5 text-[9px] text-slate-400">
                                 <div><label class="block mb-0.5">Carrocería %</label><input type="number" id="pct-volquete11-g1" value="55" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-0.5 text-center text-rose-400 focus:outline-none"></div>
                                 <div><label class="block mb-0.5">Críticos %</label><input type="number" id="pct-volquete11-g2" value="20" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-0.5 text-center text-blue-400 focus:outline-none"></div>
                                 <div><label class="block mb-0.5">Menores %</label><input type="number" id="pct-volquete11-g3" value="15" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-0.5 text-center text-amber-400 focus:outline-none"></div>
                                 <div><label class="block mb-0.5">Minúsculos %</label><input type="number" id="pct-volquete11-g4" value="10" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-0.5 text-center text-emerald-400 focus:outline-none"></div>
                             </div>
-                            <div class="grid grid-cols-2 gap-2 text-[11px] bg-slate-950/60 p-2 rounded-lg border border-slate-900">
+                            <div class="grid grid-cols-2 gap-2 text-[10px] bg-slate-950/60 p-2 rounded-lg">
                                 <div><label class="block text-slate-400 mb-0.5">Plazo (Meses)</label><input type="number" id="meses-volquete11" value="4" min="1" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md px-2 py-0.5 focus:outline-none text-slate-200"></div>
                                 <div><label class="block text-slate-400 mb-0.5">Desfase Inicio (Meses)</label><input type="number" id="desfase-volquete11" value="2" min="0" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md px-2 py-0.5 focus:outline-none text-slate-200"></div>
                             </div>
@@ -186,15 +186,15 @@
                     </div>
 
                     <div class="p-3 bg-slate-950/40 rounded-xl border border-slate-800" id="box-volquete8">
-                        <div class="flex flex-col sm:flex-row justify-between gap-2 border-b border-slate-800/80 pb-2.5">
+                        <div class="flex flex-col sm:flex-row justify-between gap-2 border-b border-slate-800/80 pb-2">
                             <label class="flex items-center gap-2 font-bold text-xs cursor-pointer text-slate-200">
                                 <input type="checkbox" id="chk-volquete8" onchange="toggleMaquina('volquete8')" class="rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-0 w-4 h-4">
                                 4. Volquete 8 Toneladas
                             </label>
                             <div class="grid grid-cols-2 gap-2 w-full sm:w-auto">
                                 <div class="flex items-center gap-1">
-                                    <span class="text-[10px] text-slate-400">Cant:</span>
-                                    <input type="number" id="qty-volquete8" value="1" min="1" disabled oninput="calcularTodo()" class="bg-slate-900 border-slate-700 rounded-lg py-0.5 px-1 text-xs text-center w-12 font-black text-blue-400 focus:outline-none">
+                                    <span class="text-[10px] text-slate-400">Qty:</span>
+                                    <input type="number" id="qty-volquete8" value="1" min="1" disabled oninput="calcularTodo()" class="bg-slate-900 border border-slate-700 rounded-lg py-0.5 px-1 text-xs text-center w-12 font-black text-blue-400 focus:outline-none">
                                 </div>
                                 <div class="flex items-center gap-1">
                                     <span class="text-[10px] text-slate-400">Costo U:</span>
@@ -202,14 +202,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="desglose-volquete8" class="space-y-2.5 hidden pt-2.5">
+                        <div id="desglose-volquete8" class="space-y-2 hidden pt-2">
                             <div class="grid grid-cols-4 gap-1.5 text-[9px] text-slate-400">
                                 <div><label class="block mb-0.5">Carrocería %</label><input type="number" id="pct-volquete8-g1" value="60" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-0.5 text-center text-rose-400 focus:outline-none"></div>
                                 <div><label class="block mb-0.5">Críticos %</label><input type="number" id="pct-volquete8-g2" value="15" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-0.5 text-center text-blue-400 focus:outline-none"></div>
                                 <div><label class="block mb-0.5">Menores %</label><input type="number" id="pct-volquete8-g3" value="15" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-0.5 text-center text-amber-400 focus:outline-none"></div>
                                 <div><label class="block mb-0.5">Minúsculos %</label><input type="number" id="pct-volquete8-g4" value="10" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md py-0.5 text-center text-emerald-400 focus:outline-none"></div>
                             </div>
-                            <div class="grid grid-cols-2 gap-2 text-[11px] bg-slate-950/60 p-2 rounded-lg border border-slate-900">
+                            <div class="grid grid-cols-2 gap-2 text-[10px] bg-slate-950/60 p-2 rounded-lg">
                                 <div><label class="block text-slate-400 mb-0.5">Plazo (Meses)</label><input type="number" id="meses-volquete8" value="4" min="1" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md px-2 py-0.5 focus:outline-none text-slate-200"></div>
                                 <div><label class="block text-slate-400 mb-0.5">Desfase Inicio (Meses)</label><input type="number" id="desfase-volquete8" value="2" min="0" oninput="calcularTodo()" class="w-full bg-slate-900 border border-slate-800 rounded-md px-2 py-0.5 focus:outline-none text-slate-200"></div>
                             </div>
@@ -219,7 +219,7 @@
                     <div class="p-3 bg-slate-950/40 rounded-xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
                         <label class="flex items-center gap-2 font-semibold text-slate-300 cursor-pointer">
                             <input type="checkbox" id="chk-transporte" onchange="toggleMaquina('transporte')" class="rounded bg-slate-800 border-slate-700 text-blue-600 focus:ring-0 w-4 h-4">
-                            Agregar Logística / Flete de la Flota
+                            Logística / Flete de la Flota (No entra en margen por producto)
                         </label>
                         <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
                             <span class="text-slate-400 text-[10px]">Valor flete $:</span>
@@ -228,49 +228,67 @@
                     </div>
                 </div>
 
-                <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 shadow-lg grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <h3 class="text-xs sm:text-sm font-bold text-emerald-400 flex items-center gap-2 sm:col-span-2">
-                        <i class="fa-solid fa-calculator"></i> Cotización Comercial de la Flota
+                <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 shadow-lg space-y-4">
+                    <h3 class="text-xs sm:text-sm font-bold text-emerald-400 flex items-center gap-2">
+                        <i class="fa-solid fa-table-list"></i> 2. Grilla Comercial (Precio Unitario y Margen por Fila)
                     </h3>
-                    <div>
-                        <label class="block text-xs font-semibold mb-1 text-slate-400">Precio de Venta Final Pactado ($) *</label>
-                        <input type="number" id="comercial-venta" value="0" oninput="calcularRentabilidad()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 font-bold focus:outline-none focus:border-emerald-500">
-                    </div>
-                    <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800 flex flex-col justify-center">
-                        <span class="text-[11px] text-slate-400 block mb-0.5">Margen de la Operación</span>
-                        <span id="txt-margen-operacion" class="text-lg sm:text-xl font-black text-emerald-400">0.00%</span>
+                    
+                    <div class="bg-slate-950 p-2 rounded-xl overflow-hidden border border-slate-800">
+                        <table class="w-full text-left text-[11px] border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-800 text-slate-400 font-bold">
+                                    <th class="pb-2">Producto Activo</th>
+                                    <th class="pb-2 text-center">Cant.</th>
+                                    <th class="pb-2 text-right">Precio Venta Unitario ($)</th>
+                                    <th class="pb-2 text-right">Margen Individual</th>
+                                </tr>
+                            </thead>
+                            <tbody id="grilla-comercial-filas" class="divide-y divide-slate-800/60 text-slate-300">
+                                <tr><td class="py-4 text-center italic text-slate-500" colspan="4">Tildá maquinarias arriba para abrir la grilla comercial...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
 
-                    <div class="p-3 bg-slate-950/40 rounded-xl border border-slate-800 sm:col-span-2 space-y-3">
-                        <p class="text-xs font-bold text-slate-300"><i class="fa-solid fa-building-columns text-blue-400"></i> Línea de Financiación Pyme (Subsidio de Tasa)</p>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="p-3 bg-slate-950/40 rounded-xl border border-slate-800 space-y-3">
+                        <p class="text-xs font-bold text-slate-300"><i class="fa-solid fa-building-columns text-blue-400"></i> Estructura de Financiación y Margen Neto de la Operación</p>
+                        <div class="grid grid-cols-2 gap-3 text-xs">
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Monto financiado por Banco (%)</label>
-                                <input type="number" id="finan-pct" value="0" max="100" oninput="calcularRentabilidad()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs focus:outline-none">
+                                <input type="number" id="finan-pct" value="0" max="100" oninput="calcularRentabilidad()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 focus:outline-none">
                             </div>
                             <div>
                                 <label class="block text-[10px] text-slate-400 mb-1">Tasa anual que absorbe la fábrica (%)</label>
-                                <input type="number" id="finan-tasa" value="0" oninput="calcularRentabilidad()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs focus:outline-none text-amber-300">
+                                <input type="number" id="finan-tasa" value="0" oninput="calcularRentabilidad()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 focus:outline-none text-amber-300">
                             </div>
                         </div>
-                        <div class="text-[11px] bg-slate-950 p-2.5 rounded-lg flex justify-between items-center border border-slate-800">
-                            <span>Margen Neto Real de Fábrica (Post Tasa):</span>
-                            <span id="txt-margen-neto-neto" class="font-bold text-cyan-400 text-right">0.00%</span>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-800/80 text-[11px]">
+                            <div class="flex justify-between items-center p-2 bg-slate-900/60 rounded-lg border border-slate-800">
+                                <span class="text-slate-400">Margen de Operación Global:</span>
+                                <span id="txt-margen-operacion" class="font-black text-emerald-400">0.00%</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-slate-900/60 rounded-lg border border-slate-800">
+                                <span class="text-slate-400">Margen Neto de Operación (Post Banco):</span>
+                                <span id="txt-margen-neto-neto" class="font-black text-cyan-400">0.00%</span>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <button onclick="guardarCotizacion()" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-black text-sm text-white shadow-xl flex items-center justify-center gap-2 transition-all">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Archivar Cotización en Lote
+                </button>
             </div>
 
             <div class="space-y-4">
                 <div class="bg-gradient-to-br from-slate-900/90 to-slate-800/90 p-4 rounded-2xl border border-slate-700 shadow-2xl">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Costo Total Combinado</span>
-                    <h2 id="txt-costo-consolidado" class="text-2xl font-black text-white">$0</h2>
-                    <p class="text-[9px] text-slate-400">Suma total multiplicada por cantidades</p>
+                    <div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-400 block">Costo de Fabricación:</span><span id="txt-costo-consolidado" class="text-sm font-black text-slate-300">$0</span></div>
+                    <div class="flex justify-between items-center mt-1"><span class="text-xs font-bold text-slate-400 block">Precio de Venta Combinado:</span><span id="txt-venta-consolidada" class="text-sm font-black text-emerald-400">$0</span></div>
                 </div>
 
                 <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 flex flex-col items-center shadow-lg">
                     <h4 class="text-xs font-bold text-slate-300 self-start mb-2 uppercase tracking-wider">🔬 Masa de Costos de Ingeniería Total</h4>
-                    <div class="w-full max-w-[150px]">
+                    <div class="w-full max-w-[130px]">
                         <canvas id="chartIngenieria"></canvas>
                     </div>
                     <div class="w-full space-y-1 mt-3 border-t border-slate-800 pt-2 text-[10px] text-slate-400">
@@ -285,12 +303,12 @@
                     <h4 class="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1">
                         <i class="fa-solid fa-chart-bar"></i> Flujos por Línea de Fabricación
                     </h4>
-                    <div id="contenedor-graficos-cashflow" class="space-y-3 max-h-[250px] overflow-y-auto pr-1 no-scrollbar"></div>
+                    <div id="contenedor-graficos-cashflow" class="space-y-3 max-h-[220px] overflow-y-auto pr-1 no-scrollbar"></div>
                 </div>
 
                 <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 shadow-lg">
                     <h4 class="text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider"><i class="fa-solid fa-folder text-amber-400"></i> Historial</h4>
-                    <div class="space-y-1 max-h-[120px] overflow-y-auto no-scrollbar" id="lista-historial"></div>
+                    <div class="space-y-1 max-h-[100px] overflow-y-auto no-scrollbar" id="lista-historial"></div>
                 </div>
             </div>
         </main>
@@ -319,6 +337,9 @@
         let cashflowTotalPorMes = {};
 
         const nombresMeses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+        // Precios de venta individuales en memoria local para evitar que se borren al recalcular el costo
+        let preciosVentaUnitarios = { cosechadora: 0, arrancadora: 0, volquete11: 0, volquete8: 0 };
 
         document.addEventListener("DOMContentLoaded", () => {
             document.getElementById('fecha-base-global').value = new Date().toISOString().split('T')[0];
@@ -365,7 +386,7 @@
         }
 
         // ========================================================
-        // ⚙️ MOTOR DE CASH FLOW CON CURVA DE INVERSIÓN SOLAPADA
+        // ⚙️ MOTOR DE PROCESAMIENTO GENERAL
         // ========================================================
         function calcularTodo() {
             costoConsolidadoGlobal = 0;
@@ -381,6 +402,7 @@
 
             const fechaBaseStr = document.getElementById('fecha-base-global').value;
             
+            // Inicializar las etiquetas fijas de 12 meses
             let arrayEtiq12Meses = [];
             for (let i = 0; i < 12; i++) {
                 let fBase = new Date(fechaBaseStr + "T00:00:00");
@@ -395,31 +417,52 @@
             Object.values(chartInstancesMap).forEach(chart => chart.destroy());
             chartInstancesMap = {};
 
+            // Renderizar dinámicamente la grilla comercial por filas según las máquinas activas
+            const tablaFilas = document.getElementById('grilla-comercial-filas');
+            let htmlFilasComerciales = "";
+            let maquinasTildadasCount = 0;
+
             maquinas.forEach(m => {
                 const chk = document.getElementById(`chk-${m.id}`);
                 if (chk && chk.checked) {
+                    maquinasTildadasCount++;
                     const cantidad = parseInt(document.getElementById(`qty-${m.id}`).value) || 1;
                     const costoUnitario = parseFloat(document.getElementById(`costo-${m.id}`).value) || 0;
                     const costoTotalMaquina = costoUnitario * Math.abs(cantidad);
                     
                     costoConsolidadoGlobal += costoTotalMaquina;
 
-                    // Dinero total asignado a cada grupo por esta máquina
-                    const g1_total = costoTotalMaquina * ((parseFloat(document.getElementById(`pct-${m.id}-g1`).value) || 0) / 100);
-                    const g2_total = costoTotalMaquina * ((parseFloat(document.getElementById(`pct-${m.id}-g2`).value) || 0) / 100);
-                    const g3_total = costoTotalMaquina * ((parseFloat(document.getElementById(`pct-${m.id}-g3`).value) || 0) / 100);
-                    const g4_total = costoTotalMaquina * ((parseFloat(document.getElementById(`pct-${m.id}-g4`).value) || 0) / 100);
+                    // Recuperamos o inicializamos el precio de venta individual cargado anteriormente
+                    let valVentaCargado = preciosVentaUnitarios[m.id] || 0;
 
-                    globalG1 += g1_total; globalG2 += g2_total; globalG3 += g3_total; globalG4 += g4_total;
+                    // CONSTRUCCIÓN DINÁMICA DE LA FILA COMERCIAL SOLICITADA
+                    htmlFilasComerciales += `
+                        <tr class="hover:bg-slate-900/40">
+                            <td class="py-2.5 font-bold text-slate-200">🚜 ${m.label}</td>
+                            <td class="py-2.5 text-center font-mono text-blue-400 font-bold">x${cantidad}</td>
+                            <td class="py-2.5 text-right">
+                                <input type="number" id="venta-unit-${m.id}" value="${valVentaCargado}" oninput="actualizarPrecioVentaFila('${m.id}', ${costoUnitario})" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-right font-black text-emerald-400 w-32 focus:outline-none focus:border-emerald-500">
+                            </td>
+                            <td class="py-2.5 text-right font-black text-slate-100" id="txt-margen-fila-${m.id}">0.00%</td>
+                        </tr>
+                    `;
+
+                    // Ponderación de Ingeniería
+                    const p1 = (parseFloat(document.getElementById(`pct-${m.id}-g1`).value) || 0) / 100;
+                    const p2 = (parseFloat(document.getElementById(`pct-${m.id}-g2`).value) || 0) / 100;
+                    const p3 = (parseFloat(document.getElementById(`pct-${m.id}-g3`).value) || 0) / 100;
+                    const p4 = (parseFloat(document.getElementById(`pct-${m.id}-g4`).value) || 0) / 100;
+
+                    globalG1 += costoTotalMaquina * p1; globalG2 += costoTotalMaquina * p2; globalG3 += costoTotalMaquina * p3; globalG4 += costoTotalMaquina * p4;
 
                     const mesesPlazo = parseInt(document.getElementById(`meses-${m.id}`).value) || 1;
                     const desfaseInicio = parseInt(document.getElementById(`desfase-${m.id}`).value) || 0;
+                    const erogacionMensualTotal = costoTotalMaquina / mesesPlazo;
 
                     let labelsMaquina = [];
                     let datosMaquina = [];
 
-                    // ALGORITMO CRONOLÓGICO DE SOLAPAMIENTO DE INGENIERÍA REAL (Fases de taller)
-                    // Dividimos el plazo en 3 etapas críticas de erogación
+                    // Algoritmo por fases solapadas para gráficos de líneas de tiempo chicos
                     const tercio = mesesPlazo / 3;
 
                     for (let i = 0; i < 12; i++) {
@@ -432,27 +475,20 @@
                         const mesRelativoProduccion = i - desfaseInicio;
 
                         if (mesRelativoProduccion >= 0 && mesRelativoProduccion < mesesPlazo) {
-                            
-                            // Fase Inicial (Chasis / Carrocería + arranque de críticos)
                             if (mesRelativoProduccion < tercio) {
-                                const mesesEnFase1 = Math.min(tercio, mesesPlazo) - 0;
-                                erogacionMesActual += g1_total / mesesEnFase1; // Toda la carrocería se liquida acá
-                                erogacionMesActual += (g2_total * 0.25) / mesesEnFase1; // Anticipo 25% de piezas críticas
-                            }
-                            // Fase Media (Grueso de componentes críticos + arranque de menores)
-                            else if (mesRelativoProduccion >= tercio && mesRelativoProduccion < (tercio * 2)) {
-                                const mesesEnFase2 = Math.min(tercio * 2, mesesPlazo) - tercio;
-                                erogacionMesActual += (g2_total * 0.75) / mesesEnFase2; // 75% restante de críticos
-                                erogacionMesActual += (g3_total * 0.40) / mesesEnFase2; // 40% de componentes menores
-                            }
-                            // Fase Final (Cierre de menores + bulonería y comerciales minúsculos)
-                            else {
-                                const mesesEnFase3 = mesesPlazo - (tercio * 2);
-                                erogacionMesActual += (g3_total * 0.60) / mesesEnFase3; // 60% restante de menores
-                                erogacionMesActual += g4_total / mesesEnFase3; // 100% de bulonería y comerciales
+                                const m1 = Math.min(tercio, mesesPlazo);
+                                erogacionMesActual += (costoTotalMaquina * p1) / m1;
+                                erogacionMesActual += ((costoTotalMaquina * p2) * 0.25) / m1;
+                            } else if (mesRelativoProduccion >= tercio && mesRelativoProduccion < (tercio * 2)) {
+                                const m2 = Math.min(tercio * 2, mesesPlazo) - tercio;
+                                erogacionMesActual += ((costoTotalMaquina * p2) * 0.75) / m2;
+                                erogacionMesActual += ((costoTotalMaquina * p3) * 0.40) / m2;
+                            } else {
+                                const m3 = mesesPlazo - (tercio * 2);
+                                erogacionMesActual += ((costoTotalMaquina * p3) * 0.60) / m3;
+                                erogacionMesActual += (costoTotalMaquina * p4) / m3;
                             }
                         }
-
                         datosMaquina.push(Math.round(erogacionMesActual));
                         cashflowTotalPorMes[tagMes] += erogacionMesActual;
                     }
@@ -461,7 +497,7 @@
                     contenedorGraficos.innerHTML += `
                         <div class="bg-slate-950/70 p-2 rounded-xl border border-slate-800">
                             <span class="text-[10px] font-bold text-slate-300 block mb-0.5">📊 ${m.label} (x${cantidad}):</span>
-                            <div class="w-full h-12"><canvas id="${idCanvas}"></canvas></div>
+                            <div class="w-full h-11"><canvas id="${idCanvas}"></canvas></div>
                         </div>
                     `;
 
@@ -475,6 +511,13 @@
                     }, 5);
                 }
             });
+
+            // Pintar grilla comercial o cartel de vacio
+            if (maquinasTildadasCount > 0) {
+                tablaFilas.innerHTML = htmlFilasComerciales;
+            } else {
+                tablaFilas.innerHTML = '<tr><td class="py-4 text-center italic text-slate-500" colspan="4">Tildá maquinarias arriba para abrir la grilla comercial...</td></tr>';
+            }
 
             if (document.getElementById('chk-transporte').checked) {
                 costoConsolidadoGlobal += parseFloat(document.getElementById('costo-transporte').value) || 0;
@@ -492,98 +535,72 @@
 
             renderizarGraficoDonutIngenieria(globalG1, globalG2, globalG3, globalG4);
             renderizarGraficoTotalConsolidado(arrayEtiq12Meses);
-            calcularRentabilidad();
-        }
-
-        function renderizarGraficoTotalConsolidado(etiquetas12Meses) {
-            const ctx = document.getElementById('chartCashFlowTotal').getContext('2d');
-            if (chartTotalInstance) chartTotalInstance.destroy();
-
-            let datosTotales = etiquetas12Meses.map(mes => Math.round(cashflowTotalPorMes[mes] || 0));
-
-            chartTotalInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: etiquetas12Meses,
-                    datasets: [{ label: 'Erogación Combinada', data: datosTotales, backgroundColor: '#06b6d4', borderRadius: 4 }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: '#cbd5e1', font: { size: 9, weight: 'bold' } } },
-                        y: { ticks: { color: '#64748b', font: { size: 8 } }, grid: { color: 'rgba(51, 65, 85, 0.2)' } }
-                    },
-                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => ` Erogación: $${c.raw.toLocaleString('es-AR')}` } } }
+            
+            // Forzamos el cálculo de rentabilidades de las filas
+            maquinas.forEach(m => {
+                if (document.getElementById(`chk-${m.id}`).checked) {
+                    const costoUnit = parseFloat(document.getElementById(`costo-${m.id}`).value) || 0;
+                    actualizarPrecioVentaFila(m.id, costoUnit);
                 }
             });
         }
 
-        function renderizarGraficoDonutIngenieria(v1, v2, v3, v4) {
-            const ctx = document.getElementById('chartIngenieria').getContext('2d');
-            if (chartIngenieriaInstance) chartIngenieriaInstance.destroy();
-            const sum = v1 + v2 + v3 + v4;
-            chartIngenieriaInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Carrocería', 'Val. Crítico', 'Menores', 'Minúsculos'],
-                    datasets: [{ data: sum === 0 ? [1, 0, 0, 0] : [v1, v2, v3, v4], backgroundColor: sum === 0 ? ['#334155'] : ['#ef4444', '#3b82f6', '#f59e0b', '#10b981'], borderWidth: 1, borderColor: '#1e293b' }]
-                },
-                options: { responsive: true, cutout: '72%', plugins: { legend: { display: false } } }
-            });
+        // ========================================================
+        // 📈 LOGICA DE PRECIOS POR FILA Y MARGENES INDIVIDUALES
+        // ========================================================
+        function actualizarPrecioVentaFila(idMaquina, costoUnitario) {
+            const inputVenta = document.getElementById(`venta-unit-${idMaquina}`);
+            const precioVentaUnit = parseFloat(inputVenta.value) || 0;
+            
+            // Guardamos el precio en la memoria local para persistencia
+            preciosVentaUnitarios[idMaquina] = precioVentaUnit;
+
+            const txtMargenFila = document.getElementById(`txt-margen-fila-${idMaquina}`);
+
+            if (precioVentaUnit <= 0 || costoUnitario <= 0) {
+                txtMargenFila.textContent = "0.00%";
+                calcularRentabilidad();
+                return;
+            }
+
+            // FÓRMULA SOLICITADA INDIVIDUAL: (Venta Unit - Costo Unit) / Venta Unit
+            const margenFila = ((precioVentaUnit - costoUnitario) / precioVentaUnit) * 100;
+            txtMargenFila.textContent = `${margenFila.toFixed(2)}%`;
+            txtMargenFila.className = `py-2.5 text-right font-black ${margenFila >= 0 ? 'text-emerald-400' : 'text-rose-500'}`;
+
+            calcularRentabilidad();
         }
 
         function calcularRentabilidad() {
-            const precioVenta = parseFloat(document.getElementById('comercial-venta').value) || 0;
-            if (precioVenta <= 0 || costoConsolidadoGlobal <= 0) {
+            let ventaConsolidadaTotal = 0;
+            const maquinas = ["cosechadora", "arrancadora", "volquete11", "volquete8"];
+
+            maquinas.forEach(id => {
+                const chk = document.getElementById(`chk-${id}`);
+                if (chk && chk.checked) {
+                    const cantidad = parseInt(document.getElementById(`qty-${id}`).value) || 1;
+                    const precioVentaUnit = preciosVentaUnitarios[id] || 0;
+                    ventaConsolidadaTotal += (precioVentaUnit * cantidad);
+                }
+            });
+
+            document.getElementById('txt-venta-consolidada').textContent = `$${ventaConsolidadaTotal.toLocaleString('es-AR')}`;
+
+            if (ventaConsolidadaTotal <= 0 || costoConsolidadoGlobal <= 0) {
                 document.getElementById('txt-margen-operacion').textContent = "0.00%";
                 document.getElementById('txt-margen-neto-neto').textContent = "0.00%";
                 return;
             }
-            // FÓRMULA EXPRESA DE MARGEN: (Venta - Costo) / Venta
-            const margenComercial = ((precioVenta - costoConsolidadoGlobal) / precioVenta) * 100;
-            document.getElementById('txt-margen-operacion').textContent = `${margenComercial.toFixed(2)}%`;
 
+            // MARGEN DE OPERACIÓN GLOBAL COMBINADO
+            const margenComercialGlobal = ((ventaConsolidadaTotal - costoConsolidadoGlobal) / ventaConsolidadaTotal) * 100;
+            document.getElementById('txt-margen-operacion').textContent = `${margenComercialGlobal.toFixed(2)}%`;
+
+            // CONSERVACIÓN DEL PORCENTAJE GLOBAL Y LA TASA DEL BANCO MÁS EL MARGEN NETO DE LA OPERACIÓN
             const pctFinan = parseFloat(document.getElementById('finan-pct').value) || 0;
             const tasaAbsorvida = parseFloat(document.getElementById('finan-tasa').value) || 0;
-            const costoFinanciero = (precioVenta * (pctFinan / 100)) * (tasaAbsorvida / 100);
-            const margenNetoNeto = ((precioVenta - costoConsolidadoGlobal - costoFinanciero) / precioVenta) * 100;
             
-            const txtNeto = document.getElementById('txt-margen-neto-neto');
-            txtNeto.textContent = `${margenNetoNeto.toFixed(2)}%`;
-            txtNeto.className = `font-bold ${margenNetoNeto >= 0 ? 'text-cyan-400' : 'text-rose-500'}`;
-        }
-
-        async function guardarCotizacion() {
-            if (!SB_URL || costoConsolidadoGlobal <= 0) return alert("Falta conectar o cargar datos.");
-            let combo = [];
-            ["cosechadora", "arrancadora", "volquete11", "volquete8"].forEach(m => {
-                if(document.getElementById(`chk-${m}`).checked) combo.push(`${document.getElementById(`qty-${m}`).value}x ${m.toUpperCase()}`);
-            });
-            const precioVenta = parseFloat(document.getElementById('comercial-venta').value) || 0;
-            const margenComercial = ((precioVenta - costoConsolidadoGlobal) / precioVenta) * 100;
-            const payload = {
-                descripcion_combo: combo.join(" + ") || "LOGÍSTICA",
-                costo_produccion_total: costoConsolidadoGlobal, precio_venta_final: precioVenta,
-                margen_estimado_porcentaje: Number(margenComercial.toFixed(2)),
-                costo_financiero_tasa: parseFloat(document.getElementById('finan-tasa').value) || 0,
-                meses_fabricacion: 12, desglose_json: { g1: globalG1, g2: globalG2, g3: globalG3, g4: globalG4 }
-            };
-            try {
-                await fetch(`${SB_URL}/rest/v1/costos_maquinaria`, { method: 'POST', headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                alert("Flota archivada."); cargarHistorial();
-            } catch (err) {}
-        }
-
-        async function cargarHistorial() {
-            try {
-                const res = await fetch(`${SB_URL}/rest/v1/costos_maquinaria?order=fecha_calculo.desc`, { method: 'GET', headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } });
-                const datos = await res.json(); let html = "";
-                datos.slice(0, 5).forEach(h => {
-                    html += `<div class="bg-slate-950/80 p-1.5 border border-slate-800 text-[10px] rounded-md mb-0.5"><div class="flex justify-between text-slate-300"><span>🚜 ${h.descripcion_combo}</span><span class="text-emerald-400">${h.margen_estimado_porcentaje}%</span></div></div>`;
-                });
-                document.getElementById('lista-historial').innerHTML = html || '<p class="text-xs text-slate-500 italic">Sin registros.</p>';
-            } catch (err) {}
-        }
-    </script>
-</body>
-</html>
+            const costoFinancieroBanco = (ventaConsolidadaTotal * (pctFinan / 100)) * (tasaAbsorvida / 100);
+            const utilidadFinalNetadeTasa = (ventaConsolidadaTotal - costoConsolidadoGlobal) - costoFinancieroBanco;
+            
+            const margenNetoOperacionFinal = (utilidadFinalNet
