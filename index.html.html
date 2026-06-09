@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Costeo Estructurado y Margen por Producto</title>
+    <title>Cotizador Industrial de Flotas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -34,15 +34,15 @@
 
     <div class="relative z-10 min-h-screen flex flex-col">
         
-        <div id="modal-conexion" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div id="modal-conexion" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div class="bg-slate-900 p-6 rounded-2xl max-w-md w-full border border-slate-700 shadow-2xl space-y-4">
                 <div class="flex items-center gap-3">
-                    <div class="p-3 bg-amber-500/10 text-amber-500 rounded-xl">
-                        <i class="fa-solid fa-key text-xl"></i>
+                    <div class="p-3 bg-blue-500/10 text-blue-500 rounded-xl">
+                        <i class="fa-solid fa-database text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold">Configurar conexión</h3>
-                        <p class="text-xs text-slate-400">Credenciales de Supabase</p>
+                        <h3 class="text-lg font-bold">Conectar Base de Datos</h3>
+                        <p class="text-xs text-slate-400">Ingresá las claves para iniciar el cotizador</p>
                     </div>
                 </div>
                 
@@ -57,18 +57,12 @@
                     </div>
                     
                     <div id="setup-error-msg" class="p-2.5 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl hidden text-[11px]">
-                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> No se pudo conectar. Verifica las claves.
+                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> Error: Las credenciales son incorrectas o falta crear la tabla 'costos_maquinaria' en este proyecto.
                     </div>
 
-                    <div class="grid grid-cols-1 gap-2 pt-2">
-                        <button onclick="guardarConfiguracionManual()" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold text-sm text-white transition-colors shadow-lg shadow-blue-600/20">
-                            Conectar y guardar
-                        </button>
-                        
-                        <button onclick="forzarLimpiezaLocal()" class="w-full bg-slate-800 hover:bg-red-950/40 border border-slate-700 hover:border-red-900 text-slate-400 hover:text-red-400 py-2 rounded-xl text-xs transition-all">
-                            <i class="fa-solid fa-trash-can mr-1"></i> Restablecer y Limpiar Conexión
-                        </button>
-                    </div>
+                    <button onclick="guardarConfiguracionManual()" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold text-sm text-white transition-colors shadow-lg">
+                        Conectar y Acceder
+                    </button>
                 </div>
             </div>
         </div>
@@ -81,7 +75,7 @@
                         <h1 class="text-base sm:text-lg font-bold tracking-tight">Matriz de Cotización y Multi Cash Flow</h1>
                         <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-slate-400">
                             <span id="status-dot" class="w-2 h-2 rounded-full bg-gray-500"></span>
-                            <span id="status-text">Detectando conexión...</span>
+                            <span id="status-text">Esperando conexión...</span>
                         </div>
                     </div>
                 </div>
@@ -91,7 +85,7 @@
             </div>
         </header>
 
-        <main class="max-w-7xl mx-auto p-2 sm:p-4 grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 flex-grow w-full">
+        <main class="max-w-7xl mx-auto p-2 sm:p-4 grid grid-cols-1 xl:grid-cols-3 gap-4 flex-grow w-full">
             
             <div class="xl:col-span-2 space-y-4">
                 
@@ -101,7 +95,7 @@
                     </h3>
 
                     <div class="bg-slate-950/80 p-2.5 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                        <span class="font-semibold text-slate-300"><i class="fa-solid fa-clock text-blue-400 mr-1"></i> Mes Base de Arranque de Production:</span>
+                        <span class="font-semibold text-slate-300"><i class="fa-solid fa-clock text-blue-400 mr-1"></i> Mes Base de Arranque de Producción:</span>
                         <input type="date" id="fecha-base-global" onchange="calcularTodo()" class="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-slate-200 focus:outline-none w-full sm:w-40">
                     </div>
                     
@@ -263,4 +257,432 @@
                     </div>
 
                     <div class="p-3 bg-slate-950/40 rounded-xl border border-slate-800 space-y-3">
-                        <p class
+                        <p class="text-xs font-bold text-slate-300"><i class="fa-solid fa-building-columns text-blue-400"></i> Estructura de Financiación y Margen Neto de la Operación</p>
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Monto financiado por Banco (%)</label>
+                                <input type="number" id="finan-pct" value="0" max="100" oninput="calcularRentabilidad()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Tasa absorbida por la fábrica (%)</label>
+                                <input type="number" id="finan-tasa" value="0" oninput="calcularRentabilidad()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 focus:outline-none text-amber-300">
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-800/80 text-[11px]">
+                            <div class="flex justify-between items-center p-2 bg-slate-900/60 rounded-lg border border-slate-800">
+                                <span class="text-slate-400">Margen de Operación Global:</span>
+                                <span id="txt-margen-operacion" class="font-black text-emerald-400">0.00%</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-slate-900/60 rounded-lg border border-slate-800">
+                                <span class="text-slate-400">Margen Neto de Operación (Post Banco):</span>
+                                <span id="txt-margen-neto-neto" class="font-black text-cyan-400">0.00%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="guardarCotizacion()" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-black text-sm text-white shadow-xl flex items-center justify-center gap-2 transition-all">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Archivar Cotización en Lote
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div class="bg-gradient-to-br from-slate-900/90 to-slate-800/90 p-4 rounded-2xl border border-slate-700 shadow-2xl">
+                    <div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-400 block">Costo de Fabricación:</span><span id="txt-costo-consolidado" class="text-sm font-black text-slate-300">$0</span></div>
+                    <div class="flex justify-between items-center mt-1"><span class="text-xs font-bold text-slate-400 block">Precio de Venta Combinado:</span><span id="txt-venta-consolidada" class="text-sm font-black text-emerald-400">$0</span></div>
+                </div>
+
+                <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 flex flex-col items-center shadow-lg">
+                    <h4 class="text-xs font-bold text-slate-300 self-start mb-2 uppercase tracking-wider">🔬 Masa de Costos de Ingeniería Total</h4>
+                    <div class="w-full max-w-[130px]">
+                        <canvas id="chartIngenieria"></canvas>
+                    </div>
+                    <div class="w-full space-y-1 mt-3 border-t border-slate-800 pt-2 text-[10px] text-slate-400">
+                        <div class="flex justify-between"><span>🔩 Total Carrocería:</span><span id="txt-g1" class="font-bold text-slate-200">$0</span></div>
+                        <div class="flex justify-between"><span>⚙️ Total Comp. Críticos:</span><span id="txt-g2" class="font-bold text-slate-200">$0</span></div>
+                        <div class="flex justify-between"><span>🔧 Total Comp. Menores:</span><span id="txt-g3" class="font-bold text-slate-200">$0</span></div>
+                        <div class="flex justify-between"><span>📎 Total Comerciales:</span><span id="txt-g4" class="font-bold text-slate-200">$0</span></div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 shadow-lg space-y-3">
+                    <h4 class="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1">
+                        <i class="fa-solid fa-chart-bar"></i> Flujos por Línea de Fabricación
+                    </h4>
+                    <div id="contenedor-graficos-cashflow" class="space-y-3 max-h-[220px] overflow-y-auto pr-1 no-scrollbar"></div>
+                </div>
+
+                <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 shadow-lg">
+                    <h4 class="text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider"><i class="fa-solid fa-folder text-amber-400"></i> Historial</h4>
+                    <div class="space-y-1 max-h-[100px] overflow-y-auto no-scrollbar" id="lista-historial"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="w-full max-w-7xl mx-auto p-2 sm:p-4 mt-1 relative z-10">
+            <div class="bg-slate-900/95 border border-cyan-500/30 p-4 rounded-2xl shadow-2xl">
+                <div class="flex justify-between items-center mb-3">
+                    <h5 class="text-[11px] font-black text-white uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-cyan-400 text-sm"></i> Flujo Consolidado de Inversión Anual (Erogación Real Solapada de Fábrica)
+                    </h5>
+                    <span class="text-[9px] bg-cyan-950 text-cyan-400 px-2 py-0.5 rounded-full font-bold">12 Meses</span>
+                </div>
+                <div class="w-full h-44 sm:h-52">
+                    <canvas id="chartCashFlowTotal"></canvas>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        let SB_URL = ""; let SB_KEY = ""; 
+        let chartIngenieriaInstance = null; let chartTotalInstance = null;
+        let chartInstancesMap = {}; 
+        let costoConsolidadoGlobal = 0;
+        let globalG1 = 0; let globalG2 = 0; let globalG3 = 0; let globalG4 = 0;
+        let cashflowTotalPorMes = {};
+
+        const nombresMeses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+        let preciosVentaUnitarios = { cosechadora: 0, arrancadora: 0, volquete11: 0, volquete8: 0 };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('fecha-base-global').value = new Date().toISOString().split('T')[0];
+            intentarConexionAutomatica();
+        });
+
+        // ========================================================
+        // 🛡️ NUEVO MOTOR DE SEGURIDAD INTEGRAL (SISTEMA DE PASO LIMPIO)
+        // ========================================================
+        async function intentarConexionAutomatica() {
+            const cachedUrl = localStorage.getItem("maqui_sb_url");
+            const cachedKey = localStorage.getItem("maqui_sb_key");
+            
+            if (cachedUrl && cachedKey) {
+                actualizarIndicadorStatus("bg-amber-500", "Validando credenciales...");
+                try {
+                    let urlLimpia = cachedUrl.replace(/\/rest\/v1\/?$/, "");
+                    
+                    // Probamos pegarle a la tabla. Si responde ok, el link y las claves son impecables.
+                    const res = await fetch(`${urlLimpia}/rest/v1/costos_maquinaria?limit=1`, {
+                        method: 'GET',
+                        headers: { 'apikey': cachedKey, 'Authorization': `Bearer ${cachedKey}` }
+                    });
+                    
+                    if (!res.ok) throw new Error();
+                    
+                    SB_URL = urlLimpia; SB_KEY = cachedKey;
+                    actualizarIndicadorStatus("bg-emerald-500", "Conectado a Supabase");
+                    document.getElementById('modal-conexion').classList.add('hidden');
+                    document.getElementById('setup-error-msg').classList.add('hidden');
+                    cargarHistorial();
+                    calcularTodo();
+                } catch (err) {
+                    // Si falla, el modal NO bloquea nada, simplemente se queda abierto mostrando el error para corregir en vivo
+                    actualizarIndicadorStatus("bg-rose-500", "Error de conexión");
+                    document.getElementById('setup-error-msg').classList.remove('hidden');
+                    document.getElementById('modal-conexion').classList.remove('hidden');
+                    calcularTodo();
+                }
+            } else {
+                document.getElementById('modal-conexion').classList.remove('hidden');
+                calcularTodo();
+            }
+        }
+
+        function guardarConfiguracionManual() {
+            let urlInput = document.getElementById('setup-url').value.trim();
+            const keyInput = document.getElementById('setup-key').value.trim();
+            
+            if (!urlInput || !keyInput) return alert("Por favor ingresá todos los campos.");
+            
+            // ESCUDO CONTRA ERRORES: Si pegan el rest/v1 por inercia, se remueve solo de forma invisible
+            urlInput = urlInput.replace(/\/rest\/v1\/?$/, "");
+
+            // Guardamos con una clave exclusiva para esta app para que no colisione con el hogar en ningún navegador
+            localStorage.setItem("maqui_sb_url", urlInput);
+            localStorage.setItem("maqui_sb_key", keyInput);
+            
+            intentarConexionAutomatica();
+        }
+
+        function abrirModalManual() {
+            document.getElementById('setup-url').value = localStorage.getItem("maqui_sb_url") || "";
+            document.getElementById('setup-key').value = localStorage.getItem("maqui_sb_key") || "";
+            document.getElementById('modal-conexion').classList.remove('hidden');
+        }
+
+        function actualizarIndicadorStatus(colorClass, text) {
+            document.getElementById('status-dot').className = `w-2 h-2 rounded-full ${colorClass}`;
+            document.getElementById('status-text').textContent = text;
+        }
+
+        function toggleMaquina(id) {
+            const chk = document.getElementById(`chk-${id}`);
+            if (id !== "transporte") {
+                document.getElementById(`costo-${id}`).disabled = !chk.checked;
+                document.getElementById(`qty-${id}`).disabled = !chk.checked;
+                document.getElementById(`costo-${id}`).value = chk.checked ? "0" : "";
+                document.getElementById(`qty-${id}`).value = chk.checked ? "1" : "1";
+                document.getElementById(`desglose-${id}`).classList.toggle('hidden', !chk.checked);
+            } else {
+                document.getElementById('costo-transporte').disabled = !chk.checked;
+                document.getElementById('costo-transporte').value = chk.checked ? "0" : "";
+            }
+            calcularTodo();
+        }
+
+        function calcularTodo() {
+            costoConsolidadoGlobal = 0;
+            globalG1 = 0; globalG2 = 0; globalG3 = 0; globalG4 = 0;
+            cashflowTotalPorMes = {};
+
+            const maquinas = [
+                { id: "cosechadora", label: "Cosechadora" },
+                { id: "arrancadora", label: "Arrancadora" },
+                { id: "volquete11", label: "Volquete 11T" },
+                { id: "volquete8", label: "Volquete 8T" }
+            ];
+
+            const fechaBaseStr = document.getElementById('fecha-base-global').value;
+            
+            let arrayEtiq12Meses = [];
+            for (let i = 0; i < 12; i++) {
+                let fBase = new Date(fechaBaseStr + "T00:00:00");
+                fBase.setMonth(fBase.getMonth() + i);
+                let tagMes = `${nombresMeses[fBase.getMonth()]} ${String(fBase.getFullYear()).slice(-2)}`;
+                arrayEtiq12Meses.push(tagMes);
+                cashflowTotalPorMes[tagMes] = 0;
+            }
+
+            const contenedorGraficos = document.getElementById('contenedor-graficos-cashflow');
+            contenedorGraficos.innerHTML = "";
+            Object.values(chartInstancesMap).forEach(chart => chart.destroy());
+            chartInstancesMap = {};
+
+            const tablaFilas = document.getElementById('grilla-comercial-filas');
+            let htmlFilasComerciales = "";
+            let maquinasTildadasCount = 0;
+
+            maquinas.forEach(m => {
+                const chk = document.getElementById(`chk-${m.id}`);
+                if (chk && chk.checked) {
+                    maquinasTildadasCount++;
+                    const cantidad = parseInt(document.getElementById(`qty-${m.id}`).value) || 1;
+                    const costoUnitario = parseFloat(document.getElementById(`costo-${m.id}`).value) || 0;
+                    const costoTotalMaquina = costoUnitario * Math.abs(cantidad);
+                    
+                    costoConsolidadoGlobal += costoTotalMaquina;
+                    let valVentaCargado = preciosVentaUnitarios[m.id] || 0;
+
+                    htmlFilasComerciales += `
+                        <tr class="hover:bg-slate-900/40">
+                            <td class="py-2.5 font-bold text-slate-200">🚜 ${m.label}</td>
+                            <td class="py-2.5 text-center font-mono text-blue-400 font-bold">x${cantidad}</td>
+                            <td class="py-2.5 text-right">
+                                <input type="number" id="venta-unit-${m.id}" value="${valVentaCargado}" oninput="actualizarPrecioVentaFila('${m.id}', ${costoUnitario})" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-right font-black text-emerald-400 w-32 focus:outline-none focus:border-emerald-500">
+                            </td>
+                            <td class="py-2.5 text-right font-black text-slate-100" id="txt-margen-fila-${m.id}">0.00%</td>
+                        </tr>
+                    `;
+
+                    const p1 = (parseFloat(document.getElementById(`pct-${m.id}-g1`).value) || 0) / 100;
+                    const p2 = (parseFloat(document.getElementById(`pct-${m.id}-g2`).value) || 0) / 100;
+                    const p3 = (parseFloat(document.getElementById(`pct-${m.id}-g3`).value) || 0) / 100;
+                    const p4 = (parseFloat(document.getElementById(`pct-${m.id}-g4`).value) || 0) / 100;
+
+                    globalG1 += costoTotalMaquina * p1; globalG2 += costoTotalMaquina * p2; globalG3 += costoTotalMaquina * p3; globalG4 += costoTotalMaquina * p4;
+
+                    const mesesPlazo = parseInt(document.getElementById(`meses-${m.id}`).value) || 1;
+                    const desfaseInicio = parseInt(document.getElementById(`desfase-${m.id}`).value) || 0;
+                    
+                    let labelsMaquina = [];
+                    let datosMaquina = [];
+                    const tercio = mesesPlazo / 3;
+
+                    for (let i = 0; i < 12; i++) {
+                        let f = new Date(fechaBaseStr + "T00:00:00");
+                        f.setMonth(f.getMonth() + i);
+                        let tagMes = `${nombresMeses[f.getMonth()]} ${String(f.getFullYear()).slice(-2)}`;
+                        labelsMaquina.push(tagMes);
+
+                        let erogacionMesActual = 0;
+                        const mesRelativoProduccion = i - desfaseInicio;
+
+                        if (mesRelativoProduccion >= 0 && mesRelativoProduccion < mesesPlazo) {
+                            if (mesRelativoProduccion < tercio) {
+                                const m1 = Math.min(tercio, mesesPlazo);
+                                erogacionMesActual += (costoTotalMaquina * p1) / m1;
+                                erogacionMesActual += ((costoTotalMaquina * p2) * 0.25) / m1;
+                            } else if (mesRelativoProduccion >= tercio && mesRelativoProduccion < (tercio * 2)) {
+                                const m2 = Math.min(tercio * 2, mesesPlazo) - tercio;
+                                erogacionMesActual += ((costoTotalMaquina * p2) * 0.75) / m2;
+                                erogacionMesActual += ((costoTotalMaquina * p3) * 0.40) / m2;
+                            } else {
+                                const m3 = mesesPlazo - (tercio * 2);
+                                erogacionMesActual += ((costoTotalMaquina * p3) * 0.60) / m3;
+                                erogacionMesActual += (costoTotalMaquina * p4) / m3;
+                            }
+                        }
+                        datosMaquina.push(Math.round(erogacionMesActual));
+                        cashflowTotalPorMes[tagMes] += erogacionMesActual;
+                    }
+
+                    let idCanvas = `chartCash-${m.id}`;
+                    contenedorGraficos.innerHTML += `
+                        <div class="bg-slate-950/70 p-2 rounded-xl border border-slate-800">
+                            <span class="text-[10px] font-bold text-slate-300 block mb-0.5">📊 ${m.label} (x${cantidad}):</span>
+                            <div class="w-full h-11"><canvas id="${idCanvas}"></canvas></div>
+                        </div>
+                    `;
+
+                    setTimeout(() => {
+                        let ctxInd = document.getElementById(idCanvas).getContext('2d');
+                        chartInstancesMap[m.id] = new Chart(ctxInd, {
+                            type: 'bar',
+                            data: { labels: labelsMaquina, datasets: [{ data: datosMaquina, backgroundColor: '#3b82f6', borderRadius: 2 }] },
+                            options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false } }, plugins: { legend: { display: false } } }
+                        });
+                    }, 5);
+                }
+            });
+
+            if (maquinasTildadasCount > 0) tablaFilas.innerHTML = htmlFilasComerciales;
+            else tablaFilas.innerHTML = '<tr><td class="py-4 text-center italic text-slate-500" colspan="4">Tildá maquinarias arriba para abrir la grilla comercial...</td></tr>';
+
+            if (document.getElementById('chk-transporte').checked) {
+                costoConsolidadoGlobal += parseFloat(document.getElementById('costo-transporte').value) || 0;
+            }
+
+            document.getElementById('txt-costo-consolidado').textContent = `$${costoConsolidadoGlobal.toLocaleString('es-AR')}`;
+            document.getElementById('txt-g1').textContent = `$${Math.round(globalG1).toLocaleString('es-AR')}`;
+            document.getElementById('txt-g2').textContent = `$${Math.round(globalG2).toLocaleString('es-AR')}`;
+            document.getElementById('txt-g3').textContent = `$${Math.round(globalG3).toLocaleString('es-AR')}`;
+            document.getElementById('txt-g4').textContent = `$${Math.round(globalG4).toLocaleString('es-AR')}`;
+
+            if (contenedorGraficos.innerHTML === "") contenedorGraficos.innerHTML = '<p class="text-[11px] text-slate-500 italic text-center p-1">Ningún fierro activo.</p>';
+
+            renderizarGraficoDonutIngenieria(globalG1, globalG2, globalG3, globalG4);
+            renderizarGraficoTotalConsolidado(arrayEtiq12Meses);
+            
+            maquinas.forEach(m => {
+                if (document.getElementById(`chk-${m.id}`).checked) {
+                    const costoUnit = parseFloat(document.getElementById(`costo-${m.id}`).value) || 0;
+                    actualizarPrecioVentaFila(m.id, costoUnit);
+                }
+            });
+        }
+
+        function actualizarPrecioVentaFila(idMaquina, costoUnitario) {
+            const inputVenta = document.getElementById(`venta-unit-${idMaquina}`);
+            if(!inputVenta) return;
+            const precioVentaUnit = parseFloat(inputVenta.value) || 0;
+            preciosVentaUnitarios[idMaquina] = precioVentaUnit;
+
+            const txtMargenFila = document.getElementById(`txt-margen-fila-${idMaquina}`);
+            if(!txtMargenFila) return;
+
+            if (precioVentaUnit <= 0 || costoUnitario <= 0) {
+                txtMargenFila.textContent = "0.00%";
+                calcularRentabilidad();
+                return;
+            }
+
+            const margenFila = ((precioVentaUnit - costoUnitario) / precioVentaUnit) * 100;
+            txtMargenFila.textContent = `${margenFila.toFixed(2)}%`;
+            txtMargenFila.className = `py-2.5 text-right font-black ${margenFila >= 0 ? 'text-emerald-400' : 'text-rose-500'}`;
+            calcularRentabilidad();
+        }
+
+        function calcularRentabilidad() {
+            let ventaConsolidadaTotal = 0;
+            const maquinas = ["cosechadora", "arrancadora", "volquete11", "volquete8"];
+
+            maquinas.forEach(id => {
+                const chk = document.getElementById(`chk-${id}`);
+                if (chk && chk.checked) {
+                    const cantidad = parseInt(document.getElementById(`qty-${id}`).value) || 1;
+                    ventaConsolidadaTotal += ((preciosVentaUnitarios[id] || 0) * cantidad);
+                }
+            });
+
+            document.getElementById('txt-venta-consolidada').textContent = `$${ventaConsolidadaTotal.toLocaleString('es-AR')}`;
+
+            if (ventaConsolidadaTotal <= 0 || costoConsolidadoGlobal <= 0) {
+                document.getElementById('txt-margen-operacion').textContent = "0.00%";
+                document.getElementById('txt-margen-neto-neto').textContent = "0.00%";
+                return;
+            }
+
+            const margenComercialGlobal = ((ventaConsolidadaTotal - costoConsolidadoGlobal) / ventaConsolidadaTotal) * 100;
+            document.getElementById('txt-margen-operacion').textContent = `${margenComercialGlobal.toFixed(2)}%`;
+
+            const pctFinan = parseFloat(document.getElementById('finan-pct').value) || 0;
+            const tasaAbsorvida = parseFloat(document.getElementById('finan-tasa').value) || 0;
+            
+            const costoFinancieroBanco = (ventaConsolidadaTotal * (pctFinan / 100)) * (tasaAbsorvida / 100);
+            const utilidadFinalNetadeTasa = (ventaConsolidadaTotal - costoConsolidadoGlobal) - costoFinancieroBanco;
+            
+            const margenNetoOperacionFinal = (utilidadFinalNetadeTasa / ventaConsolidadaTotal) * 100;
+            document.getElementById('txt-margen-neto-neto').textContent = `${margenNetoOperacionFinal.toFixed(2)}%`;
+        }
+
+        function renderizarGraficoTotalConsolidado(etiquetas12Meses) {
+            const ctx = document.getElementById('chartCashFlowTotal').getContext('2d');
+            if (chartTotalInstance) chartTotalInstance.destroy();
+            let datosTotales = etiquetas12Meses.map(mes => Math.round(cashflowTotalPorMes[mes] || 0));
+            chartTotalInstance = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: etiquetas12Meses, datasets: [{ label: 'Erogación Combinada', data: datosTotales, backgroundColor: '#06b6d4', borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false }, ticks: { color: '#cbd5e1', font: { size: 9, weight: 'bold' } } }, y: { ticks: { color: '#64748b', font: { size: 8 } }, grid: { color: 'rgba(51, 65, 85, 0.2)' } } }, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function renderizarGraficoDonutIngenieria(v1, v2, v3, v4) {
+            const ctx = document.getElementById('chartIngenieria').getContext('2d');
+            if (chartIngenieriaInstance) chartIngenieriaInstance.destroy();
+            const sum = v1 + v2 + v3 + v4;
+            chartIngenieriaInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: ['Carrocería', 'Val. Crítico', 'Menores', 'Minúsculos'], datasets: [{ data: sum === 0 ? [1, 0, 0, 0] : [v1, v2, v3, v4], backgroundColor: sum === 0 ? ['#334155'] : ['#ef4444', '#3b82f6', '#f59e0b', '#10b981'], borderWidth: 1, borderColor: '#1e293b' }] },
+                options: { responsive: true, cutout: '72%', plugins: { legend: { display: false } } }
+            });
+        }
+
+        async function guardarCotizacion() {
+            if (!SB_URL || costoConsolidadoGlobal <= 0) return alert("Falta conectar o cargar datos.");
+            let combo = []; let totalVentaAux = 0;
+            ["cosechadora", "arrancadora", "volquete11", "volquete8"].forEach(m => {
+                if(document.getElementById(`chk-${m}`).checked) {
+                    let q = document.getElementById(`qty-${m}`).value;
+                    combo.push(`${q}x ${m.toUpperCase()}`);
+                    totalVentaAux += (preciosVentaUnitarios[m] || 0) * q;
+                }
+            });
+            const margenComercial = ((totalVentaAux - costoConsolidadoGlobal) / totalVentaAux) * 100;
+            const payload = {
+                descripcion_combo: combo.join(" + ") || "LOGÍSTICA",
+                costo_produccion_total: costoConsolidadoGlobal, precio_venta_final: totalVentaAux,
+                margen_estimado_porcentaje: Number(margenComercial.toFixed(2)),
+                costo_financiero_tasa: parseFloat(document.getElementById('finan-tasa').value) || 0,
+                meses_fabricacion: 12, desglose_json: { g1: globalG1, g2: globalG2, g3: globalG3, g4: globalG4 }
+            };
+            try {
+                await fetch(`${SB_URL}/rest/v1/costos_maquinaria`, { method: 'POST', headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                alert("Cotización por filas comerciales guardada."); cargarHistorial();
+            } catch (err) {}
+        }
+
+        async function cargarHistorial() {
+            try {
+                const res = await fetch(`${SB_URL}/rest/v1/costos_maquinaria?order=fecha_calculo.desc`, { method: 'GET', headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } });
+                const datos = await res.json(); let html = "";
+                datos.slice(0, 5).forEach(h => {
+                    html += `<div class="bg-slate-950/80 p-1.5 border border-slate-800 text-[10px] rounded-md mb-0.5"><div class="flex justify-between text-slate-300"><span>🚜 ${h.descripcion_combo}</span><span class="text-emerald-400">${h.margen_estimado_porcentaje}%</span></div></div>`;
+                });
+                document.getElementById('lista-historial').innerHTML = html || '<p class="text-xs text-slate-500 italic">Sin registros.</p>';
+            } catch (err) {}
+        }
+    </script>
+</body>
+</html>
