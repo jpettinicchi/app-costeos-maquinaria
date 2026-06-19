@@ -57,7 +57,7 @@
                     </div>
                     
                     <div id="setup-error-msg" class="p-2.5 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl hidden text-[11px]">
-                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> Error: Las credenciales son incorrectas o falta crear la tabla 'costos_maquinaria' en este proyecto.
+                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> Error: Las credenciales son incorrectas o falta configurar Supabase.
                     </div>
 
                     <button onclick="guardarConfiguracionManual()" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold text-sm text-white transition-colors shadow-lg">
@@ -85,13 +85,13 @@
             </div>
         </header>
 
-        <main class="max-w-7xl mx-auto p-2 sm:p-4 grid grid-cols-1 xl:grid-cols-3 gap-4 flex-grow w-full">
+        <main class="max-w-7xl mx-auto p-2 sm:p-4 grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 flex-grow w-full">
             
             <div class="xl:col-span-2 space-y-4">
                 
                 <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800/80 shadow-lg space-y-4">
                     <h3 class="text-sm font-bold text-blue-400 flex items-center gap-2">
-                        <i class="fa-solid fa-layer-group"></i> 1. Costeo de Fábrica y Plazos
+                        <i class="fa-solid fa-layer-group"></i> 1. Costeo de Fábrica Predeterminado
                     </h3>
 
                     <div class="bg-slate-950/80 p-2.5 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
@@ -110,9 +110,12 @@
                                     <span class="text-[10px] text-slate-400">Qty:</span>
                                     <input type="number" id="qty-cosechadora" value="1" min="1" disabled oninput="calcularTodo()" class="bg-slate-900 border border-slate-700 rounded-lg py-0.5 px-1 text-xs text-center w-12 font-black text-blue-400 focus:outline-none">
                                 </div>
-                                <div class="flex items-center gap-1">
+                                <div class="flex items-center gap-1 relative">
                                     <span class="text-[10px] text-slate-400">Costo U:</span>
-                                    <input type="number" id="costo-cosechadora" placeholder="0" disabled oninput="calcularTodo()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-0.5 text-xs text-right w-full font-bold text-slate-300 focus:outline-none">
+                                    <div class="flex items-center gap-1 w-full">
+                                        <input type="number" id="costo-cosechadora" placeholder="Cargando..." disabled oninput="calcularTodo()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-0.5 text-xs text-right w-full font-bold text-slate-300 focus:outline-none disabled:opacity-60">
+                                        <button id="btn-edit-cosechadora" onclick="toggleModificarCosto('cosechadora')" disabled class="p-1 text-slate-400 hover:text-blue-400 transition-colors disabled:opacity-30 text-[11px]"><i class="fa-solid fa-lock"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -143,7 +146,10 @@
                                 </div>
                                 <div class="flex items-center gap-1">
                                     <span class="text-[10px] text-slate-400">Costo U:</span>
-                                    <input type="number" id="costo-arrancadora" placeholder="0" disabled oninput="calcularTodo()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-0.5 text-xs text-right w-full font-bold text-slate-300 focus:outline-none">
+                                    <div class="flex items-center gap-1 w-full">
+                                        <input type="number" id="costo-arrancadora" placeholder="Cargando..." disabled oninput="calcularTodo()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-0.5 text-xs text-right w-full font-bold text-slate-300 focus:outline-none disabled:opacity-60">
+                                        <button id="btn-edit-arrancadora" onclick="toggleModificarCosto('arrancadora')" disabled class="p-1 text-slate-400 hover:text-blue-400 transition-colors disabled:opacity-30 text-[11px]"><i class="fa-solid fa-lock"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -174,7 +180,10 @@
                                 </div>
                                 <div class="flex items-center gap-1">
                                     <span class="text-[10px] text-slate-400">Costo U:</span>
-                                    <input type="number" id="costo-volquete11" placeholder="0" disabled oninput="calcularTodo()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-0.5 text-xs text-right w-full font-bold text-slate-300 focus:outline-none">
+                                    <div class="flex items-center gap-1 w-full">
+                                        <input type="number" id="costo-volquete11" placeholder="Cargando..." disabled oninput="calcularTodo()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-0.5 text-xs text-right w-full font-bold text-slate-300 focus:outline-none disabled:opacity-60">
+                                        <button id="btn-edit-volquete11" onclick="toggleModificarCosto('volquete11')" disabled class="p-1 text-slate-400 hover:text-blue-400 transition-colors disabled:opacity-30 text-[11px]"><i class="fa-solid fa-lock"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -205,7 +214,10 @@
                                 </div>
                                 <div class="flex items-center gap-1">
                                     <span class="text-[10px] text-slate-400">Costo U:</span>
-                                    <input type="number" id="costo-volquete8" placeholder="0" disabled oninput="calcularTodo()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-0.5 text-xs text-right w-full font-bold text-slate-300 focus:outline-none">
+                                    <div class="flex items-center gap-1 w-full">
+                                        <input type="number" id="costo-volquete8" placeholder="Cargando..." disabled oninput="calcularTodo()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-0.5 text-xs text-right w-full font-bold text-slate-300 focus:outline-none disabled:opacity-60">
+                                        <button id="btn-edit-volquete8" onclick="toggleModificarCosto('volquete8')" disabled class="p-1 text-slate-400 hover:text-blue-400 transition-colors disabled:opacity-30 text-[11px]"><i class="fa-solid fa-lock"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -345,15 +357,15 @@
 
         const nombresMeses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
         let preciosVentaUnitarios = { cosechadora: 0, arrancadora: 0, volquete11: 0, volquete8: 0 };
+        
+        // Estado de edición de los costos fijos
+        let editandoCostos = { cosechadora: false, arrancadora: false, volquete11: false, volquete8: false };
 
         document.addEventListener("DOMContentLoaded", () => {
             document.getElementById('fecha-base-global').value = new Date().toISOString().split('T')[0];
             intentarConexionAutomatica();
         });
 
-        // ========================================================
-        // 🛡️ NUEVO MOTOR DE SEGURIDAD INTEGRAL (SISTEMA DE PASO LIMPIO)
-        // ========================================================
         async function intentarConexionAutomatica() {
             const cachedUrl = localStorage.getItem("maqui_sb_url");
             const cachedKey = localStorage.getItem("maqui_sb_key");
@@ -363,7 +375,6 @@
                 try {
                     let urlLimpia = cachedUrl.replace(/\/rest\/v1\/?$/, "");
                     
-                    // Probamos pegarle a la tabla. Si responde ok, el link y las claves son impecables.
                     const res = await fetch(`${urlLimpia}/rest/v1/costos_maquinaria?limit=1`, {
                         method: 'GET',
                         headers: { 'apikey': cachedKey, 'Authorization': `Bearer ${cachedKey}` }
@@ -375,13 +386,18 @@
                     actualizarIndicadorStatus("bg-emerald-500", "Conectado a Supabase");
                     document.getElementById('modal-conexion').classList.add('hidden');
                     document.getElementById('setup-error-msg').classList.add('hidden');
+                    
+                    // Activamos los botones de edición de costos y descargamos los costos fijos
+                    habilitarBotonesEdicionCostos(true);
+                    await descargarCostosPredeterminados();
+                    
                     cargarHistorial();
                     calcularTodo();
                 } catch (err) {
-                    // Si falla, el modal NO bloquea nada, simplemente se queda abierto mostrando el error para corregir en vivo
                     actualizarIndicadorStatus("bg-rose-500", "Error de conexión");
                     document.getElementById('setup-error-msg').classList.remove('hidden');
                     document.getElementById('modal-conexion').classList.remove('hidden');
+                    habilitarBotonesEdicionCostos(false);
                     calcularTodo();
                 }
             } else {
@@ -393,16 +409,10 @@
         function guardarConfiguracionManual() {
             let urlInput = document.getElementById('setup-url').value.trim();
             const keyInput = document.getElementById('setup-key').value.trim();
-            
             if (!urlInput || !keyInput) return alert("Por favor ingresá todos los campos.");
-            
-            // ESCUDO CONTRA ERRORES: Si pegan el rest/v1 por inercia, se remueve solo de forma invisible
             urlInput = urlInput.replace(/\/rest\/v1\/?$/, "");
-
-            // Guardamos con una clave exclusiva para esta app para que no colisione con el hogar en ningún navegador
             localStorage.setItem("maqui_sb_url", urlInput);
             localStorage.setItem("maqui_sb_key", keyInput);
-            
             intentarConexionAutomatica();
         }
 
@@ -417,12 +427,78 @@
             document.getElementById('status-text').textContent = text;
         }
 
+        function habilitarBotonesEdicionCostos(status) {
+            const maquinas = ["cosechadora", "arrancadora", "volquete11", "volquete8"];
+            maquinas.forEach(id => {
+                const btn = document.getElementById(`btn-edit-${id}`);
+                if(btn) {
+                    btn.disabled = !status;
+                    btn.innerHTML = status ? '<i class="fa-solid fa-pen"></i>' : '<i class="fa-solid fa-lock"></i>';
+                }
+            });
+        }
+
+        // ========================================================
+        // 💾 MOTOR DE PRECIOS Y COSTOS FIJOS EN LA NUBE
+        // ========================================================
+        async function descargarCostosPredeterminados() {
+            try {
+                const res = await fetch(`${SB_URL}/rest/v1/configuracion_costos`, {
+                    method: 'GET',
+                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+                });
+                if(!res.ok) return;
+                const datos = await res.json();
+                datos.forEach(item => {
+                    const inputCosto = document.getElementById(`costo-${item.id}`);
+                    if(inputCosto && !editandoCostos[item.id]) {
+                        inputCosto.value = item.costo_unitario;
+                    }
+                });
+            } catch(e) { console.log("Error descargando costos fijos"); }
+        }
+
+        async function toggleModificarCosto(idMaquina) {
+            const inputCosto = document.getElementById(`costo-${idMaquina}`);
+            const btn = document.getElementById(`btn-edit-${idMaquina}`);
+            
+            if (!editandoCostos[idMaquina]) {
+                // PASA A MODO EDICIÓN
+                editandoCostos[idMaquina] = true;
+                inputCosto.disabled = false;
+                inputCosto.focus();
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk text-emerald-400"></i>';
+            } else {
+                // PASA A MODO GUARDAR FIJO EN SUPABASE
+                editandoCostos[idMaquina] = false;
+                inputCosto.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-blue-400"></i>';
+                
+                const nuevoCosto = parseFloat(inputCosto.value) || 0;
+                
+                try {
+                    const res = await fetch(`${SB_URL}/rest/v1/configuracion_costos?id=eq.${idMaquina}`, {
+                        method: 'PATCH',
+                        headers: { 
+                            'apikey': SB_KEY, 
+                            'Authorization': `Bearer ${SB_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify({ costo_unitario: nuevoCosto })
+                    });
+                    if(!res.ok) throw new Error();
+                } catch(err) { alert("No se pudo fijar el costo en la nube, se mantendrá local temporalmente."); }
+                
+                btn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+                calcularTodo();
+            }
+        }
+
         function toggleMaquina(id) {
             const chk = document.getElementById(`chk-${id}`);
             if (id !== "transporte") {
-                document.getElementById(`costo-${id}`).disabled = !chk.checked;
                 document.getElementById(`qty-${id}`).disabled = !chk.checked;
-                document.getElementById(`costo-${id}`).value = chk.checked ? "0" : "";
                 document.getElementById(`qty-${id}`).value = chk.checked ? "1" : "1";
                 document.getElementById(`desglose-${id}`).classList.toggle('hidden', !chk.checked);
             } else {
