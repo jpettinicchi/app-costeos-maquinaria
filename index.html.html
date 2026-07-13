@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contabilidad del Hogar</title>
+    <title>Alpe Ingeniería - Costo de Maquinarias</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,8 +13,8 @@
             theme: {
                 extend: {
                     colors: {
-                        darkBg: '#0f172a',
-                        darkCard: '#1e293b'
+                        darkBg: '#090d16',
+                        darkCard: '#111827'
                     }
                 }
             }
@@ -34,8 +34,8 @@
                     <i class="fa-solid fa-key text-xl"></i>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold">Configurar conexión</h3>
-                    <p class="text-xs text-slate-400">Se guarda de forma local en este dispositivo</p>
+                    <h3 class="text-lg font-bold">Configurar conexión Supabase</h3>
+                    <p class="text-xs text-slate-400">Credenciales de base de datos para Costo de Maquinarias</p>
                 </div>
             </div>
             <div class="space-y-4">
@@ -44,7 +44,7 @@
                     <input type="text" id="setup-url" placeholder="https://xxxx.supabase.co" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 text-slate-200">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold mb-1 text-slate-400">Anon Key / Clave Pública *</label>
+                    <label class="block text-xs font-semibold mb-1 text-slate-400">Anon Key *</label>
                     <input type="password" id="setup-key" placeholder="eyJhbGciOi..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 text-slate-200">
                 </div>
                 <button onclick="guardarConfiguracionManual()" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold text-sm transition-colors shadow-lg">
@@ -54,13 +54,13 @@
         </div>
     </div>
 
-    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-40 px-4 py-3">
+    <header class="border-b border-slate-850 bg-slate-950/80 backdrop-blur sticky top-0 z-40 px-4 py-3">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
             <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
                 <div class="flex items-center gap-2">
-                    <span class="text-2xl">🏡</span>
+                    <span class="text-2xl">⚙️</span>
                     <div>
-                        <h1 class="text-lg font-bold tracking-tight">Contabilidad del Hogar</h1>
+                        <h1 class="text-lg font-bold tracking-tight text-slate-100">Alpe Ingeniería <span class="text-xs font-normal text-slate-400">| Costo de Maquinarias</span></h1>
                         <div class="flex items-center gap-1.5 text-xs text-slate-400">
                             <span id="status-dot" class="w-2 h-2 rounded-full bg-gray-500"></span>
                             <span id="status-text">Detectando conexión...</span>
@@ -72,12 +72,19 @@
                 </button>
             </div>
             
-            <div class="flex items-center gap-2 w-full sm:w-auto bg-slate-800 p-1 rounded-xl border border-slate-700">
-                <select id="filtro-temporal" onchange="cargarTodo()" class="bg-transparent text-sm font-semibold focus:outline-none pr-8 pl-2 py-1 cursor-pointer text-slate-200">
-                    <option value="actual">📅 Mes Actual</option>
-                    <option value="proyectado">🔮 Vista Proyecciones (12 Meses)</option>
-                    <option value="anual">📊 Acumulado Anual</option>
-                </select>
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <div class="flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 text-xs">
+                    <span class="text-slate-400 font-medium">TC 1 USD =</span>
+                    <input type="number" id="tipo-cambio-usd" value="1000" oninput="calcularImpuestosManuales()" class="w-16 bg-transparent text-center font-bold text-emerald-400 focus:outline-none">
+                    <span class="text-slate-400 font-semibold">ARS</span>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-900 p-1 rounded-xl border border-slate-800">
+                    <select id="filtro-temporal" onchange="cargarTodo()" class="bg-transparent text-sm font-semibold focus:outline-none pr-8 pl-2 py-1 cursor-pointer text-slate-200">
+                        <option value="actual">📅 Mes Actual</option>
+                        <option value="proyectado">🔮 Vista Proyecciones (12 Meses)</option>
+                        <option value="anual">📊 Acumulado Anual</option>
+                    </select>
+                </div>
             </div>
         </div>
     </header>
@@ -86,40 +93,41 @@
 
         <section class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
             <div class="bg-darkCard p-4 rounded-2xl border border-slate-800">
-                <p class="text-xs font-semibold text-slate-400 mb-1">Ingresos Totales</p>
-                <h3 id="card-ingresos" class="text-xl sm:text-2xl font-black text-emerald-400">$0</h3>
+                <p class="text-xs font-semibold text-slate-400 mb-1">Presupuesto Aprobado</p>
+                <h3 id="card-ingresos" class="text-xl sm:text-2xl font-black text-emerald-450">$0</h3>
             </div>
             <div class="bg-darkCard p-4 rounded-2xl border border-slate-800">
-                <p class="text-xs font-semibold text-slate-400 mb-1">Gastos Totales (Base)</p>
-                <h3 id="card-gastos" class="text-xl sm:text-2xl font-black text-rose-400">$0</h3>
+                <p class="text-xs font-semibold text-slate-400 mb-1">Costo Base Maquinaria</p>
+                <h3 id="card-gastos" class="text-xl sm:text-2xl font-black text-rose-455">$0</h3>
             </div>
             <div class="bg-darkCard p-4 rounded-2xl border border-slate-800">
-                <p class="text-xs font-semibold text-slate-400 mb-1">Ahorro Neto Real</p>
-                <h3 id="card-ahorro" class="text-xl sm:text-2xl font-black text-blue-400">$0</h3>
-                <p id="card-ahorro-pct" class="text-[10px] text-slate-400 mt-0.5">0% del ingreso</p>
+                <p class="text-xs font-semibold text-slate-400 mb-1">Costo Postventa (Exento)</p>
+                <h3 class="text-xl sm:text-2xl font-black text-blue-400">USD 5.000</h3>
+                <p id="card-postventa-pesos" class="text-[10px] text-slate-400 mt-0.5">Equiv: $0</p>
             </div>
             <div class="bg-darkCard p-4 rounded-2xl border border-slate-800">
-                <p class="text-xs font-semibold text-slate-400 mb-1">Salario Neto</p>
-                <h3 id="card-salario-neto" class="text-xl sm:text-2xl font-black text-cyan-400">$0</h3>
+                <p class="text-xs font-semibold text-slate-400 mb-1">Costo Total Final (+Imp)</p>
+                <h3 id="card-total-con-impuestos" class="text-xl sm:text-2xl font-black text-amber-505">$0</h3>
             </div>
             <div class="bg-darkCard p-4 rounded-2xl border border-slate-800 col-span-2 lg:col-span-1">
-                <p class="text-xs font-semibold text-slate-400 mb-1">⚠️ Gasto No Nec.</p>
-                <h3 id="card-no-necesario" class="text-xl sm:text-2xl font-black text-amber-400">$0</h3>
+                <p class="text-xs font-semibold text-slate-400 mb-1">Margen de Proyecto</p>
+                <h3 id="card-ahorro" class="text-xl sm:text-2xl font-black text-emerald-400">$0</h3>
+                <p id="card-ahorro-pct" class="text-[10px] text-slate-400 mt-0.5">0% del Presupuesto</p>
             </div>
         </section>
 
         <div class="flex gap-2 border-b border-slate-800 pb-px overflow-x-auto no-scrollbar">
             <button onclick="switchTab('tab-dashboard')" id="btn-tab-dashboard" class="tab-btn px-4 py-2 text-sm font-bold rounded-t-xl bg-blue-600 text-white flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-chart-pie"></i> Dashboard
+                <i class="fa-solid fa-chart-pie"></i> Dashboard Costos
             </button>
             <button onclick="switchTab('tab-gasto')" id="btn-tab-gasto" class="tab-btn px-4 py-2 text-sm font-semibold text-slate-400 hover:text-slate-200 rounded-t-xl flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-money-bill-wave"></i> Cargar Gasto
+                <i class="fa-solid fa-gears"></i> Cargar Costo Componente
             </button>
             <button onclick="switchTab('tab-ingreso')" id="btn-tab-ingreso" class="tab-btn px-4 py-2 text-sm font-semibold text-slate-400 hover:text-slate-200 rounded-t-xl flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-wallet"></i> Cargar Ingreso
+                <i class="fa-solid fa-file-invoice-dollar"></i> Presupuesto / Ingreso
             </button>
             <button onclick="switchTab('tab-movimientos')" id="btn-tab-movimientos" class="tab-btn px-4 py-2 text-sm font-semibold text-slate-400 hover:text-slate-200 rounded-t-xl flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-list"></i> Movimientos
+                <i class="fa-solid fa-list-check"></i> Desglose de Costos
             </button>
         </div>
 
@@ -128,13 +136,13 @@
                 <div class="lg:col-span-2 space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="bg-darkCard p-4 rounded-2xl border border-slate-800 flex flex-col items-center">
-                            <h4 class="text-sm font-bold text-slate-300 self-start mb-4">🔮 Distribución de Gastos</h4>
+                            <h4 class="text-sm font-bold text-slate-300 self-start mb-4">⚙️ Distribución de Costos por Rubro</h4>
                             <div class="w-full max-w-[240px]">
                                 <canvas id="chartGastos"></canvas>
                             </div>
                         </div>
                         <div class="bg-darkCard p-4 rounded-2xl border border-slate-800">
-                            <h4 class="text-sm font-bold text-slate-300 mb-4">📊 Planificación Anual (Ingresos vs Gastos)</h4>
+                            <h4 class="text-sm font-bold text-slate-300 mb-4">📊 Evolutivo Mensual del Proyecto</h4>
                             <div class="w-full h-56">
                                 <canvas id="chartEvolucionMensual"></canvas>
                             </div>
@@ -143,76 +151,87 @@
 
                     <div class="bg-darkCard p-5 rounded-2xl border border-slate-800 flex flex-col justify-start">
                         <h4 class="text-sm font-bold text-slate-300 mb-4 border-b border-slate-800 pb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-receipt text-cyan-400"></i> Resumen Operativo Financiero
+                            <i class="fa-solid fa-calculator text-cyan-400"></i> Resumen Operativo de Ingeniería
                         </h4>
                         <div class="space-y-3.5 text-sm" id="resumen-texto-dashboard"></div>
                     </div>
                 </div>
 
-                <div class="bg-slate-950 p-5 rounded-2xl border border-amber-500/30 flex flex-col justify-between">
+                <div class="bg-black p-5 rounded-2xl border border-amber-550/40 flex flex-col justify-between">
                     <div>
-                        <h4 class="text-sm font-bold text-amber-400 mb-4 border-b border-amber-500/20 pb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-percent text-amber-400"></i> Ajuste de Impuestos Manual
+                        <h4 class="text-sm font-black text-amber-400 mb-4 border-b border-amber-500/30 pb-2 flex items-center gap-2 uppercase tracking-wide">
+                            <i class="fa-solid fa-percent text-amber-400"></i> Impuestos de Importación y Operaciones
                         </h4>
                         <p class="text-xs text-slate-400 mb-4 leading-relaxed">
-                            Ingresá a mano el porcentaje de recargo. Se calculará de forma <span class="text-amber-400 font-bold">adicional</span> a los costos base guardados.
+                            Ingresá a mano el porcentaje de recargo. Se aplicarán de forma <span class="text-amber-400 font-bold">adicional</span> únicamente sobre el costo base de maquinarias (no afecta al costo de postventa de USD 5.000).
                         </p>
 
                         <div class="space-y-4">
                             <div class="flex items-center justify-between gap-4">
-                                <span class="text-xs font-semibold text-amber-300">IVA (Costos Generales):</span>
+                                <span class="text-xs font-semibold text-amber-400">Impuesto Municipal:</span>
                                 <div class="flex items-center gap-1.5 w-24">
-                                    <input type="number" id="imp-iva" value="21" oninput="calcularImpuestosManuales()" class="w-full bg-slate-900 border border-amber-500/40 rounded-lg text-center font-mono font-bold text-amber-400 py-1 text-xs focus:border-amber-400 focus:outline-none">
-                                    <span class="text-xs font-bold text-amber-300">%</span>
+                                    <input type="number" id="imp-municipal" value="1.5" step="0.1" oninput="calcularImpuestosManuales()" class="w-full bg-slate-900 border border-amber-500/60 rounded-lg text-center font-mono font-bold text-amber-450 py-1 text-xs focus:border-amber-400 focus:outline-none">
+                                    <span class="text-xs font-bold text-amber-400">%</span>
                                 </div>
                             </div>
                             <div class="flex items-center justify-between gap-4">
-                                <span class="text-xs font-semibold text-amber-300">Impuestos Tarjeta / País:</span>
+                                <span class="text-xs font-semibold text-amber-400">Impuesto a la Facturación:</span>
                                 <div class="flex items-center gap-1.5 w-24">
-                                    <input type="number" id="imp-tarjeta" value="30" oninput="calcularImpuestosManuales()" class="w-full bg-slate-900 border border-amber-500/40 rounded-lg text-center font-mono font-bold text-amber-400 py-1 text-xs focus:border-amber-400 focus:outline-none">
-                                    <span class="text-xs font-bold text-amber-300">%</span>
+                                    <input type="number" id="imp-facturacion" value="1.0" step="0.1" oninput="calcularImpuestosManuales()" class="w-full bg-slate-900 border border-amber-500/60 rounded-lg text-center font-mono font-bold text-amber-450 py-1 text-xs focus:border-amber-400 focus:outline-none">
+                                    <span class="text-xs font-bold text-amber-400">%</span>
                                 </div>
                             </div>
                             <div class="flex items-center justify-between gap-4">
-                                <span class="text-xs font-semibold text-amber-300">Tasas Municipales / ABL:</span>
+                                <span class="text-xs font-semibold text-amber-400">Impuesto al Cheque:</span>
                                 <div class="flex items-center gap-1.5 w-24">
-                                    <input type="number" id="imp-tasa" value="1.2" step="0.1" oninput="calcularImpuestosManuales()" class="w-full bg-slate-900 border border-amber-500/40 rounded-lg text-center font-mono font-bold text-amber-400 py-1 text-xs focus:border-amber-400 focus:outline-none">
-                                    <span class="text-xs font-bold text-amber-300">%</span>
+                                    <input type="number" id="imp-cheque" value="1.2" step="0.1" oninput="calcularImpuestosManuales()" class="w-full bg-slate-900 border border-amber-500/60 rounded-lg text-center font-mono font-bold text-amber-450 py-1 text-xs focus:border-amber-400 focus:outline-none">
+                                    <span class="text-xs font-bold text-amber-400">%</span>
                                 </div>
                             </div>
                             <div class="flex items-center justify-between gap-4">
-                                <span class="text-xs font-semibold text-amber-300">Impuesto al Sello:</span>
+                                <span class="text-xs font-semibold text-amber-400">Gasto Comercio Exterior:</span>
                                 <div class="flex items-center gap-1.5 w-24">
-                                    <input type="number" id="imp-sello" value="1.5" step="0.1" oninput="calcularImpuestosManuales()" class="w-full bg-slate-900 border border-amber-500/40 rounded-lg text-center font-mono font-bold text-amber-400 py-1 text-xs focus:border-amber-400 focus:outline-none">
-                                    <span class="text-xs font-bold text-amber-300">%</span>
+                                    <input type="number" id="imp-comex" value="5.0" step="0.1" oninput="calcularImpuestosManuales()" class="w-full bg-slate-900 border border-amber-500/60 rounded-lg text-center font-mono font-bold text-amber-450 py-1 text-xs focus:border-amber-400 focus:outline-none">
+                                    <span class="text-xs font-bold text-amber-400">%</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between gap-4">
+                                <span class="text-xs font-semibold text-amber-400">Impuesto Ingresos Brutos (IIBB):</span>
+                                <div class="flex items-center gap-1.5 w-24">
+                                    <input type="number" id="imp-iibb" value="3.5" step="0.1" oninput="calcularImpuestosManuales()" class="w-full bg-slate-900 border border-amber-500/60 rounded-lg text-center font-mono font-bold text-amber-450 py-1 text-xs focus:border-amber-400 focus:outline-none">
+                                    <span class="text-xs font-bold text-amber-400">%</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-8 border-t border-amber-500/20 pt-4 space-y-2">
+                    <div class="mt-8 border-t border-amber-500/30 pt-4 space-y-2.5">
                         <div class="flex justify-between text-xs text-slate-400">
-                            <span>Costos base cargados:</span>
+                            <span>Maquinarias Costo Base:</span>
                             <span id="imp-base-costos" class="font-bold text-slate-300">$0</span>
                         </div>
                         <div class="flex justify-between text-xs text-amber-400/90">
-                            <span>Incremento por IVA:</span>
-                            <span id="res-iva-monto" class="font-bold font-mono">$0</span>
+                            <span>Monto Imp. Municipal:</span>
+                            <span id="res-municipal" class="font-bold font-mono">$0</span>
                         </div>
                         <div class="flex justify-between text-xs text-amber-400/90">
-                            <span>Incremento por Tarjeta:</span>
-                            <span id="res-tarjeta-monto" class="font-bold font-mono">$0</span>
+                            <span>Monto Imp. Facturación:</span>
+                            <span id="res-facturacion" class="font-bold font-mono">$0</span>
                         </div>
                         <div class="flex justify-between text-xs text-amber-400/90">
-                            <span>Incremento por Tasas:</span>
-                            <span id="res-tasa-monto" class="font-bold font-mono">$0</span>
+                            <span>Monto Imp. Cheque:</span>
+                            <span id="res-cheque" class="font-bold font-mono">$0</span>
                         </div>
-                        <div class="flex justify-between text-xs text-amber-400/90 pb-2 border-b border-amber-500/10">
-                            <span>Incremento por Sellos:</span>
-                            <span id="res-sello-monto" class="font-bold font-mono">$0</span>
+                        <div class="flex justify-between text-xs text-amber-400/90">
+                            <span>Monto Comex:</span>
+                            <span id="res-comex" class="font-bold font-mono">$0</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-amber-400/90 pb-2 border-b border-amber-500/20">
+                            <span>Monto Ingresos Brutos:</span>
+                            <span id="res-iibb" class="font-bold font-mono">$0</span>
                         </div>
                         
-                        <div class="flex justify-between items-center bg-amber-500/10 border border-amber-500/30 p-3 rounded-xl mt-3">
+                        <div class="flex justify-between items-center bg-amber-500/10 border border-amber-500/40 p-3 rounded-xl mt-3">
                             <span class="text-xs font-black text-amber-400">TOTAL IMPUESTOS (ADICIONAL):</span>
                             <span id="imp-total-final" class="text-base font-black text-amber-400 font-mono">$0</span>
                         </div>
@@ -223,65 +242,49 @@
 
         <div id="tab-gasto" class="tab-content hidden">
             <div class="bg-darkCard p-5 rounded-2xl border border-slate-800 max-w-3xl mx-auto">
-                <h3 class="text-base font-bold mb-4 flex items-center gap-2 text-rose-400"><i class="fa-solid fa-money-bill-transfer"></i> Nuevo Gasto</h3>
+                <h3 class="text-base font-bold mb-4 flex items-center gap-2 text-rose-450"><i class="fa-solid fa-screwdriver-wrench"></i> Registrar Costo de Fabricación / Componente</h3>
                 <form id="form-gasto" onsubmit="guardarGasto(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold mb-1 text-slate-400">Fecha de Compra *</label>
-                        <input type="date" id="gasto-fecha" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                        <label class="block text-xs font-semibold mb-1 text-slate-400">Fecha de Registro *</label>
+                        <input type="date" id="gasto-fecha" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold mb-1 text-slate-400">Fijo / Variable *</label>
-                        <select id="gasto-fijo-variable" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                            <option value="VARIABLE">VARIABLE</option>
-                            <option value="FIJO">FIJO (Se proyectará en los próximos 12 meses)</option>
+                        <label class="block text-xs font-semibold mb-1 text-slate-400">Tipo de Costo *</label>
+                        <select id="gasto-fijo-variable" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-white">
+                            <option value="VARIABLE">VARIABLE (Insumos directos / Chapa)</option>
+                            <option value="FIJO">FIJO (Estructura / Personal / Planta)</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold mb-1 text-slate-400">Gasto Necesario *</label>
-                        <select id="gasto-necesario" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                            <option value="Necesario">Necesario</option>
-                            <option value="No necesario">No necesario</option>
+                        <label class="block text-xs font-semibold mb-1 text-slate-400">Criticidad del Costo *</label>
+                        <select id="gasto-necesario" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-white">
+                            <option value="Necesario">Crítico / Necesario</option>
+                            <option value="No necesario">Opcional / Reducible</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold mb-1 text-slate-400">Tipo de Gasto *</label>
-                        <select id="gasto-tipo" required onchange="actualizarConceptosGasto()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                            <option value="">Seleccionar tipo...</option>
+                        <label class="block text-xs font-semibold mb-1 text-slate-400">Rubro del Costo *</label>
+                        <select id="gasto-tipo" required onchange="actualizarConceptosGasto()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-white">
+                            <option value="">Seleccionar rubro...</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold mb-1 text-slate-400">Concepto *</label>
-                        <select id="gasto-concepto" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                            <option value="">Primero seleccionar tipo...</option>
+                        <label class="block text-xs font-semibold mb-1 text-slate-400">Concepto / Pieza *</label>
+                        <select id="gasto-concepto" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-white">
+                            <option value="">Primero seleccionar rubro...</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold mb-1 text-slate-400">Monto ($) *</label>
-                        <input type="number" id="gasto-monto-pesos" step="0.01" required placeholder="0.00" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold mb-1 text-slate-400">¿Cuándo se paga respecto al cierre?</label>
-                        <select id="gasto-pago-tarjeta" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                            <option value="Mes actual">Mes actual</option>
-                            <option value="Posterior al cierre">Posterior al cierre</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold mb-1 text-slate-400">Cuotas totales (Vacío si es 1 pago)</label>
-                        <input type="number" id="gasto-cuotas-totales" placeholder="Ej: 6" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold mb-1 text-slate-400">Cuota actual número</label>
-                        <input type="number" id="gasto-cuota-actual" placeholder="Ej: 1" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                        <label class="block text-xs font-semibold mb-1 text-slate-400">Monto del Item ($ ARS) *</label>
+                        <input type="number" id="gasto-monto-pesos" step="0.01" required placeholder="0.00" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-white">
                     </div>
 
                     <div class="sm:col-span-3">
-                        <label class="block text-xs font-semibold mb-1 text-slate-400">Nota / Comentario</label>
-                        <input type="text" id="gasto-nota" placeholder="Detalles de la erogación..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                        <label class="block text-xs font-semibold mb-1 text-slate-400">Especificaciones / Detalles de la Pieza</label>
+                        <input type="text" id="gasto-nota" placeholder="Planos, nro de lote, proveedor..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-white">
                     </div>
                     <div class="sm:col-span-3">
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg flex items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> Guardar Gasto</button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg flex items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> Guardar Costo</button>
                     </div>
                 </form>
             </div>
@@ -289,34 +292,33 @@
 
         <div id="tab-ingreso" class="tab-content hidden">
             <div class="bg-darkCard p-5 rounded-2xl border border-slate-800 max-w-3xl mx-auto">
-                <h3 class="text-base font-bold mb-4 flex items-center gap-2 text-emerald-400"><i class="fa-solid fa-wallet"></i> Nuevo Ingreso</h3>
+                <h3 class="text-base font-bold mb-4 flex items-center gap-2 text-emerald-450"><i class="fa-solid fa-wallet"></i> Registrar Pago del Cliente / Presupuesto</h3>
                 <form id="form-ingreso" onsubmit="guardarIngreso(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold mb-1 text-slate-400">Fecha *</label>
-                        <input type="date" id="ingreso-fecha" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                        <input type="date" id="ingreso-fecha" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold mb-1 text-slate-400">Categoría *</label>
-                        <select id="ingreso-categoria" required onchange="actualizarConceptosIngreso()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                        <label class="block text-xs font-semibold mb-1 text-slate-400">Categoría Comercial *</label>
+                        <select id="ingreso-categoria" required onchange="actualizarConceptosIngreso()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-white">
                             <option value="">Seleccionar...</option>
-                            <option value="Ingresos Javi">Ingresos Javi</option>
-                            <option value="Ingresos Meli">Ingresos Meli</option>
-                            <option value="Ingresos extras">Ingresos extras</option>
-                            <option value="Impuestos salario">Impuestos salario</option>
+                            <option value="Ingresos Alpe">Presupuesto Alpe</option>
+                            <option value="Anticipos">Anticipos de Cliente</option>
+                            <option value="Otros Ingresos">Ingresos extras</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold mb-1 text-slate-400">Concepto *</label>
-                        <select id="ingreso-concepto" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                        <label class="block text-xs font-semibold mb-1 text-slate-400">Concepto Comercial *</label>
+                        <select id="ingreso-concepto" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-white">
                             <option value="">Seleccionar categoría primero...</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold mb-1 text-slate-400">Monto ($) *</label>
-                        <input type="number" id="ingreso-monto-pesos" step="0.01" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                        <label class="block text-xs font-semibold mb-1 text-slate-400">Monto Percibido ($ ARS) *</label>
+                        <input type="number" id="ingreso-monto-pesos" step="0.01" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-white">
                     </div>
                     <div class="sm:col-span-2">
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> Guardar Ingreso</button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2"><i class="fa-solid fa-floppy-disk"></i> Guardar Presupuesto</button>
                     </div>
                 </form>
             </div>
@@ -325,11 +327,11 @@
         <div id="tab-movimientos" class="tab-content hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="bg-darkCard p-4 rounded-2xl border border-slate-800">
-                    <h3 class="text-sm font-bold text-slate-200 mb-3 flex items-center gap-2 border-b border-slate-700 pb-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Gastos del Mes Corriente</h3>
+                    <h3 class="text-sm font-bold text-slate-200 mb-3 flex items-center gap-2 border-b border-slate-750 pb-2"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Costos Variables Registrados</h3>
                     <div class="overflow-x-auto max-h-[450px] overflow-y-auto pr-1" id="lista-ejecutados"></div>
                 </div>
                 <div class="bg-darkCard p-4 rounded-2xl border border-slate-800">
-                    <h3 class="text-sm font-bold text-slate-200 mb-3 flex items-center gap-2 border-b border-slate-700 pb-2"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Cronograma de Gastos Proyectados (Próximos 12 Meses)</h3>
+                    <h3 class="text-sm font-bold text-slate-200 mb-3 flex items-center gap-2 border-b border-slate-750 pb-2"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Costos Fijos de Estructura / Proyectados</h3>
                     <div class="overflow-x-auto max-h-[450px] overflow-y-auto pr-1" id="lista-proyectados"></div>
                 </div>
             </div>
@@ -337,40 +339,29 @@
     </main>
 
     <script>
+        // Conceptos especializados para ALPE INGENIERÍA y Costo de Maquinarias
         const matrizConceptos = {
-            "Casa": ["Hipoteca", "Seguro Hipoteca", "Cuenta BNA", "Expensas", "Deuda 42,000 usd+cred", "Pinturerias", "Colchones", "Reparaciones Casa"],
-            "Comida": ["Verduleria", "Panaderia /pastas / Hel", "Pescado", "Mayorista", "Supermerkados", "Fiambres", "Frutos secos", "Carne / pollo"],
-            "Muebles/Equipos": ["Electrodomesticos", "Essen"],
-            "Esparcimiento": ["Delibery / Salidas /Helados", "Vacaciones"],
-            "Medicamentos": ["Farmacias"],
-            "Gasto animales": ["Comida Mishi y NINA"],
-            "Movilidad P": ["Seguro Automovil", "Combustible", "Patente Auto", "Neumaticos Calzzeta", "Respuesto Auto", "Autopista/estacionamiento"],
-            "Movilidad NP": ["Movilidad extra/sube"],
-            "Servicio AV": ["SpotiFy", "Telecom"],
-            "Servicios necesarios": ["Gastos de Alpe", "Edenor", "Gas", "ABL", "Monotributo"],
-            "Impuestos varios": ["TC/Luz/Agua etc."],
-            "Formaciones": ["Capacitaciones"],
-            "Inversiones/Publi": ["Servicio inversiones", "Insumos Pelo / cejas", "Gastos tienda/ internet"],
-            "Colegiatura": ["Colegio Lola"],
-            "Regalos": ["Regalos"],
-            "Bienestar": ["Gimnasio/pileta", "Gasto Profesionales"],
-            "Ropa/calzados": ["Zapatillas/botines", "Ropa/vestimenta"],
-            "Gastos extras": ["Gastos extras Meli", "Gastos extras Javi", "Gastos extras Lola"]
+            "Corte y Plegado": ["Chapa SAE 1010", "Chapa Inoxidable", "Corte Láser CNC", "Plegado de perfiles"],
+            "Mecanizado CNC": ["Tornería CNC", "Fresado de piezas", "Bujes y Ejes", "Rectificados"],
+            "Estructura y Soldadura": ["Consumibles soldadura", "Estructuras tubulares", "Mano de Obra Soldadores", "Perfiles IPN/UPN"],
+            "Transmisión y Motorización": ["Motores Eléctricos", "Reductores", "Poleas y Correas", "Cadenas y Piñones", "Rodamientos"],
+            "Automatización y Tablero": ["Gabinete Rittal", "PLC y Módulos", "Variadores de Frecuencia", "Sensores y Finales de Carrera", "Cableado de Potencia"],
+            "Tratamiento Térmico / Pintura": ["Pintura en Polvo Epoxi", "Galvanizado por inmersión", "Tratamiento Térmico de Ejes"],
+            "Gastos Logística": ["Fletes de chasis", "Embalajes de madera", "Grúa de Montaje en Planta"],
+            "Estructura Taller Alpe": ["Insumos generales taller", "Energía eléctrica trifásica", "Monotributo e Impuestos", "Herramental consumible"],
+            "Ingeniería y Planos": ["Horas de Diseño CAD", "Cálculo estructural"]
         };
 
         const matrizIngresos = {
-            "Ingresos Javi": ["Salario", "Alpe Ingenieria", "Venta", "Financiera de activos"],
-            "Ingresos Meli": ["Salario", "Venta"],
-            "Ingresos extras": ["Ganancias"],
-            "Impuestos salario": ["Jubilación", "Ganancias", "O social"]
+            "Ingresos Alpe": ["Presupuesto Inicial Aprobado", "Cobro Hito de Entrega", "Cobro de Puesta en Marcha"],
+            "Anticipos": ["Anticipo Financiero 50%", "Anticipo Acopio Materiales"],
+            "Otros Ingresos": ["Venta de chatarra/sobrantes", "Asesorías Externas"]
         };
 
         let SB_URL = ""; let SB_KEY = ""; let globalMovimientos = []; 
         let chartInstance = null; let chartBarrasInstance = null;
-        let globalGastosBaseCalculados = 0; // Para sincronizar con el panel de impuestos
+        let globalGastosBaseCalculados = 0; 
         let globalIngresosBaseCalculados = 0;
-        let globalSalarioNetoBolsillo = 0;
-        let globalGastoNoNecesario = 0;
 
         const nombresMesesLetra = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
@@ -401,11 +392,11 @@
                     method: 'GET', headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
                 });
                 if (!res.ok) throw new Error();
-                actualizarIndicadorStatus("bg-emerald-500", "Conectado");
+                actualizarIndicadorStatus("bg-emerald-500", "Conectado a Alpe DB");
                 document.getElementById('modal-conexion').classList.add('hidden');
                 cargarTodo();
             } catch (err) { 
-                actualizarIndicadorStatus("bg-red-500", "Error de credenciales");
+                actualizarIndicadorStatus("bg-red-500", "Error de conexión");
                 document.getElementById('modal-conexion').classList.remove('hidden'); 
             }
         }
@@ -426,7 +417,7 @@
         function actualizarConceptosGasto() {
             const tipo = document.getElementById('gasto-tipo').value;
             const conSelect = document.getElementById('gasto-concepto');
-            conSelect.innerHTML = '<option value="">Seleccionar concepto...</option>';
+            conSelect.innerHTML = '<option value="">Seleccionar componente/concepto...</option>';
             if (matrizConceptos[tipo]) {
                 matrizConceptos[tipo].forEach(c => {
                     let op = document.createElement('option'); op.value = c; op.textContent = c;
@@ -438,7 +429,7 @@
         function actualizarConceptosIngreso() {
             const cat = document.getElementById('ingreso-categoria').value;
             const compSelect = document.getElementById('ingreso-concepto');
-            compSelect.innerHTML = '<option value="">Seleccionar concepto...</option>';
+            compSelect.innerHTML = '<option value="">Seleccionar hito comercial...</option>';
             if (matrizIngresos[cat]) {
                 matrizIngresos[cat].forEach(c => {
                     let op = document.createElement('option'); op.value = c; op.textContent = c;
@@ -486,4 +477,243 @@
 
         async function guardarGasto(e) {
             e.preventDefault();
-            const cTotales = document.getElementById('gasto-cuotas-totales').
+            const payloadGastoLimpio = {
+                fecha: document.getElementById('gasto-fecha').value,
+                tipo_movimiento: "Gasto", 
+                fijo_variable: document.getElementById('gasto-fijo-variable').value,
+                gasto_necesario: document.getElementById('gasto-necesario').value,
+                tipo_gasto: document.getElementById('gasto-tipo').value, 
+                concepto: document.getElementById('gasto-concepto').value,
+                monto_pesos: parseFloat(document.getElementById('gasto-monto-pesos').value), 
+                monto_usd: 0,
+                nota: document.getElementById('gasto-nota').value.trim()
+            };
+
+            try {
+                const res = await fetch(`${SB_URL}/rest/v1/movimientos_hogar`, {
+                    method: 'POST', 
+                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                    body: JSON.stringify([payloadGastoLimpio])
+                });
+                if (!res.ok) throw new Error(await res.text());
+                
+                document.getElementById('form-gasto').reset();
+                document.getElementById('gasto-fecha').value = new Date().toISOString().split('T')[0];
+                cargarTodo();
+            } catch (err) { alert("Error al guardar: " + err.message); }
+        }
+
+        async function guardarIngreso(e) {
+            e.preventDefault();
+            const payload = [{
+                fecha: document.getElementById('ingreso-fecha').value, tipo_movimiento: "Ingreso",
+                fijo_variable: "FIJO", gasto_necesario: "Necesario", tipo_gasto: document.getElementById('ingreso-categoria').value,
+                concepto: document.getElementById('ingreso-concepto').value, monto_pesos: parseFloat(document.getElementById('ingreso-monto-pesos').value),
+                monto_usd: 0, nota: ""
+            }];
+            try {
+                const res = await fetch(`${SB_URL}/rest/v1/movimientos_hogar`, {
+                    method: 'POST', headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error(await res.text());
+                document.getElementById('form-ingreso').reset();
+                document.getElementById('ingreso-fecha').value = new Date().toISOString().split('T')[0];
+                cargarTodo();
+            } catch (err) { alert("Error al guardar: " + err.message); }
+        }
+
+        function procesarYRenderizarTableros() {
+            const filtro = document.getElementById('filtro-temporal').value;
+            const hoy = new Date();
+            const mesActualStr = String(hoy.getMonth() + 1).padStart(2, '0');
+            const anioActualStr = String(hoy.getFullYear());
+
+            let ingresosTotales = 0; let gastosTotales = 0; 
+            let distribuciónCategorias = {}; let htmlEjecutados = ""; let htmlProyectados = "";
+
+            let bolsaIngresosMeses = {}; let bolsaGastosMeses = {};
+            nombresMesesLetra.forEach(m => { bolsaIngresosMeses[m] = 0; bolsaGastosMeses[m] = 0; });
+
+            let fijosUnicosPlantilla = [];
+            globalMovimientos.forEach(m => {
+                if(m.tipo_movimiento === "Gasto" && m.fijo_variable === "FIJO") {
+                    if (!fijosUnicosPlantilla.some(f => f.concepto === m.concepto)) {
+                        fijosUnicosPlantilla.push(m);
+                    }
+                }
+            });
+
+            globalMovimientos.forEach(mov => {
+                const parts = mov.fecha.split('-');
+                if (parts[0] !== anioActualStr) return;
+                
+                const mesIndex = parseInt(parts[1]) - 1;
+                const tagMesLetra = nombresMesesLetra[mesIndex];
+
+                if (mov.tipo_movimiento === "Ingreso") {
+                    bolsaIngresosMeses[tagMesLetra] += mov.monto_pesos;
+                } else if (mov.tipo_movimiento === "Gasto") {
+                    bolsaGastosMeses[tagMesLetra] += mov.monto_pesos;
+                }
+
+                if (filtro !== 'anual' && parts[1] !== mesActualStr) return;
+
+                if (mov.tipo_movimiento === "Gasto") {
+                    let itemHtml = `
+                        <div class="flex justify-between items-center bg-slate-900/60 p-2.5 rounded-xl border border-slate-800 text-xs mb-1.5">
+                            <div class="space-y-1 text-left">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="font-bold text-slate-200">${mov.concepto}</span>
+                                    <span class="text-[9px] bg-slate-800 text-slate-400 px-1 py-0.5 rounded border border-slate-700">${mov.tipo_gasto}</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400">${mov.fecha} · <span class="text-slate-500">${mov.nota || ''}</span></p>
+                            </div>
+                            <div class="text-right flex items-center gap-2">
+                                <span class="text-[10px] text-slate-500 font-mono font-bold">ARS</span>
+                                <input type="number" value="${mov.monto_pesos}" onchange="modificarMontoLocal('${mov.id}', this.value)" class="w-24 bg-slate-950 border border-slate-700 rounded text-right px-1 font-mono font-bold text-slate-100 focus:border-blue-500 focus:outline-none">
+                            </div>
+                        </div>
+                    `;
+                    if (mov.fijo_variable === "FIJO") htmlProyectados += itemHtml;
+                    else htmlEjecutados += itemHtml;
+                }
+
+                if (mov.tipo_movimiento === "Ingreso") {
+                    ingresosTotales += mov.monto_pesos;
+                } else if (mov.tipo_movimiento === "Gasto") {
+                    gastosTotales += mov.monto_pesos;
+                    distribuciónCategorias[mov.tipo_gasto] = (distribuciónCategorias[mov.tipo_gasto] || 0) + mov.monto_pesos;
+                }
+            });
+
+            // Suma de fijos estimados no cargados aún físicamente para el evolutivo
+            nombresMesesLetra.forEach((m, idx) => {
+                const numMesFiltro = idx + 1;
+                fijosUnicosPlantilla.forEach(fijo => {
+                    let yaExisteReal = globalMovimientos.some(mReal => mReal.concepto === fijo.concepto && parseInt(mReal.fecha.split('-')[1]) === numMesFiltro);
+                    if (!yaExisteReal) {
+                        bolsaGastosMeses[m] += fijo.monto_pesos;
+                        if (filtro === "proyectado") {
+                            gastosTotales += fijo.monto_pesos;
+                            distribuciónCategorias[fijo.tipo_gasto] = (distribuciónCategorias[fijo.tipo_gasto] || 0) + fijo.monto_pesos;
+                        }
+                    }
+                });
+            });
+
+            globalGastosBaseCalculados = gastosTotales;
+            globalIngresosBaseCalculados = ingresosTotales;
+
+            document.getElementById('lista-ejecutados').innerHTML = htmlEjecutados || '<p class="text-xs text-slate-500 p-2 italic">Sin componentes cargados en este periodo.</p>';
+            document.getElementById('lista-proyectados').innerHTML = htmlProyectados || '<p class="text-xs text-slate-500 p-2 italic">Sin costos de estructura proyectados.</p>';
+
+            renderizarGraficoDonut(distribuciónCategorias);
+            renderizarGraficoBarrasEvolutivo(bolsaIngresosMeses, bolsaGastosMeses);
+
+            // Calcular impuestos de Alpe Ingeniería
+            calcularImpuestosManuales();
+        }
+
+        function calcularImpuestosManuales() {
+            const tcUsd = parseFloat(document.getElementById('tipo-cambio-usd').value) || 1000;
+            const costoPostventaUsd = 5000;
+            const costoPostventaPesos = costoPostventaUsd * tcUsd;
+
+            // Valores cargados de inputs amarillos
+            const impMunicipalPct = parseFloat(document.getElementById('imp-municipal').value) || 0;
+            const impFacturacionPct = parseFloat(document.getElementById('imp-facturacion').value) || 0;
+            const impChequePct = parseFloat(document.getElementById('imp-cheque').value) || 0;
+            const impComexPct = parseFloat(document.getElementById('imp-comex').value) || 0;
+            const impIibbPct = parseFloat(document.getElementById('imp-iibb').value) || 0;
+
+            // Se calcula SOLO sobre la base del costo de maquinaria (no sobre los 5000 USD de postventa)
+            const municipalMonto = globalGastosBaseCalculados * (impMunicipalPct / 100);
+            const facturacionMonto = globalGastosBaseCalculados * (impFacturacionPct / 100);
+            const chequeMonto = globalGastosBaseCalculados * (impChequePct / 100);
+            const comexMonto = globalGastosBaseCalculados * (impComexPct / 100);
+            const iibbMonto = globalGastosBaseCalculados * (impIibbPct / 100);
+
+            const totalImpuestosAdicionales = municipalMonto + facturacionMonto + chequeMonto + comexMonto + iibbMonto;
+            
+            // Costo final consolidado: Costo Maquinaria Base + Impuestos Calculados + Costo Postventa (en pesos)
+            const costoTotalConsolidadoPesos = globalGastosBaseCalculados + totalImpuestosAdicionales + costoPostventaPesos;
+            
+            const margenProyectoPesos = globalIngresosBaseCalculados - costoTotalConsolidadoPesos;
+            const pctMargen = globalIngresosBaseCalculados > 0 ? ((margenProyectoPesos / globalIngresosBaseCalculados) * 100).toFixed(1) : 0;
+
+            // Renderizado de las celdas amarillas (Valores de incremento)
+            document.getElementById('imp-base-costos').textContent = `$${globalGastosBaseCalculados.toLocaleString('es-AR')}`;
+            document.getElementById('res-municipal').textContent = `+$${municipalMonto.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('res-facturacion').textContent = `+$${facturacionMonto.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('res-cheque').textContent = `+$${chequeMonto.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('res-comex').textContent = `+$${comexMonto.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('res-iibb').textContent = `+$${iibbMonto.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('imp-total-final').textContent = `$${totalImpuestosAdicionales.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            // Renderizado de tarjetas superiores
+            document.getElementById('card-ingresos').textContent = `$${globalIngresosBaseCalculados.toLocaleString('es-AR')}`;
+            document.getElementById('card-gastos').textContent = `$${globalGastosBaseCalculados.toLocaleString('es-AR', {maximumFractionDigits: 0})}`;
+            document.getElementById('card-postventa-pesos').textContent = `Equiv: $${costoPostventaPesos.toLocaleString('es-AR', {maximumFractionDigits: 0})} ARS`;
+            document.getElementById('card-total-con-impuestos').textContent = `$${costoTotalConsolidadoPesos.toLocaleString('es-AR', {maximumFractionDigits: 0})}`;
+            document.getElementById('card-ahorro').textContent = `$${margenProyectoPesos.toLocaleString('es-AR', {maximumFractionDigits: 0})}`;
+            document.getElementById('card-ahorro-pct').textContent = `${pctMargen}% del presupuesto`;
+
+            // Renderizado del desglose en el resumen operativo
+            document.getElementById('resumen-texto-dashboard').innerHTML = `
+                <div class="flex justify-between border-b border-slate-800 pb-2"><span>📈 Presupuesto Total Acordado (ARS):</span><span class="font-bold text-emerald-450">$${globalIngresosBaseCalculados.toLocaleString('es-AR')}</span></div>
+                <div class="flex justify-between border-b border-slate-800 pb-2"><span>🛠️ Costo Base de Fabricación y Materiales:</span><span class="font-bold text-slate-300">$${globalGastosBaseCalculados.toLocaleString('es-AR')}</span></div>
+                <div class="flex justify-between border-b border-slate-800 pb-2 text-amber-400"><span>⚡ Impuestos Calculados Manualmente (Adicional):</span><span class="font-bold">+$${totalImpuestosAdicionales.toLocaleString('es-AR', {maximumFractionDigits: 0})}</span></div>
+                <div class="flex justify-between border-b border-slate-800 pb-2 text-cyan-400"><span>🔧 Garantía y Servicio Postventa (Exento de impuestos):</span><span class="font-bold">USD ${costoPostventaUsd.toLocaleString('es-AR')} (~$${costoPostventaPesos.toLocaleString('es-AR', {maximumFractionDigits: 0})})</span></div>
+                <div class="flex justify-between border-b border-slate-800 pb-2 text-rose-450 font-bold"><span>📉 Erogación Consolidada Final de Maquinarias:</span><span>$${costoTotalConsolidadoPesos.toLocaleString('es-AR', {maximumFractionDigits: 0})}</span></div>
+                <div class="flex justify-between p-2.5 rounded-xl ${margenProyectoPesos >= 0 ? 'bg-emerald-950/40 border border-emerald-500/20' : 'bg-rose-950/40 border border-rose-500/20'} mt-4">
+                    <span class="font-bold text-slate-200">MARGEN DE PROYECTO ESTIMADO:</span><span class="font-black text-base ${margenProyectoPesos >= 0 ? 'text-emerald-300' : 'text-rose-300'}">$${margenProyectoPesos.toLocaleString('es-AR', {maximumFractionDigits: 0})} (${pctMargen}%)</span>
+                </div>
+            `;
+        }
+
+        function renderizarGraficoDonut(dataDistribucion) {
+            const ctx = document.getElementById('chartGastos').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(dataDistribucion),
+                    datasets: [{ data: Object.values(dataDistribucion), backgroundColor: ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#06b6d4', '#ec4899', '#8b5cf6'], borderWidth: 1, borderColor: '#111827' }]
+                },
+                options: { responsive: true, cutout: '74%', plugins: { legend: { display: false } } }
+            });
+        }
+
+        function renderizarGraficoBarrasEvolutivo(ingresos, gastos) {
+            const ctx = document.getElementById('chartEvolucionMensual').getContext('2d');
+            if (chartBarrasInstance) chartBarrasInstance.destroy();
+            chartBarrasInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: nombresMesesLetra,
+                    datasets: [
+                        { label: 'Ingresos ($)', data: Object.values(ingresos), backgroundColor: '#10b981', borderRadius: 4 },
+                        { label: 'Costos ($)', data: Object.values(gastos), backgroundColor: '#ef4444', borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
+                        y: { ticks: { color: '#64748b', font: { size: 9 } }, grid: { color: 'rgba(51, 65, 85, 0.05)' } }
+                    },
+                    plugins: { legend: { display: true, labels: { color: '#cbd5e1', font: { size: 10 } } } }
+                }
+            });
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+            document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('bg-blue-600', 'text-white'); b.classList.add('text-slate-400'); });
+            const btn = document.getElementById(`btn-${tabId}`); if(btn) btn.classList.add('bg-blue-600', 'text-white');
+        }
+    </script>
+</body>
+</html>
