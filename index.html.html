@@ -264,7 +264,7 @@
                 <!-- 2. GRILLA COMERCIAL -->
                 <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 shadow-lg space-y-4">
                     <h3 class="text-xs sm:text-sm font-bold text-emerald-400 flex items-center gap-2">
-                        <i class="fa-solid fa-table-list"></i> 2. Grilla Comercial (Margen y Utilidad Real con Impuestos y Postventa)
+                        <i class="fa-solid fa-table-list"></i> 2. Grilla Comercial (Precio Unitario y Margen por Fila)
                     </h3>
                     
                     <div class="bg-slate-950 p-2 rounded-xl overflow-hidden border border-slate-800">
@@ -274,8 +274,8 @@
                                     <th class="pb-2">Producto Activo</th>
                                     <th class="pb-2 text-center">Cant.</th>
                                     <th class="pb-2 text-right">Precio Venta Unit. (USD)</th>
-                                    <th class="pb-2 text-right">Margen Neto %</th>
-                                    <th class="pb-2 text-right text-emerald-400">Utilidad Neta Real (USD)</th>
+                                    <th class="pb-2 text-right">Margen %</th>
+                                    <th class="pb-2 text-right text-emerald-400">Utilidad Neta (USD)</th>
                                 </tr>
                             </thead>
                             <tbody id="grilla-comercial-filas" class="divide-y divide-slate-800/60 text-slate-300">
@@ -332,7 +332,7 @@
                 <!-- COLUMNA IMPUESTOS MANUALES ALPE -->
                 <div class="bg-black p-5 rounded-2xl border border-amber-500/30 space-y-4 shadow-xl">
                     <h4 class="text-xs font-black text-amber-400 border-b border-amber-500/20 pb-2 flex items-center gap-2 uppercase tracking-wide">
-                        <i class="fa-solid fa-calculator text-amber-400"></i> Ajuste Impositivo Adicional (Sobre Costos)
+                        <i class="fa-solid fa-calculator text-amber-400"></i> Ajuste Impositivo Adicional
                     </h4>
                     <p class="text-[10px] text-slate-400 leading-relaxed">
                         Modificá a mano los porcentajes y montos. Los recargos se aplican <span class="text-amber-400 font-bold">adicionalmente</span> solo sobre el costo de fabricación base.
@@ -371,7 +371,7 @@
                         <div class="flex items-center justify-between text-xs">
                             <span class="text-amber-400 font-semibold">Ingresos Brutos (IIBB):</span>
                             <div class="flex items-center gap-1 w-20">
-                                <input type="number" id="imp-iibb" value="3.5" step="0.1" oninput="calcularTodo()" class="w-full bg-slate-900 border border-amber-500/50 rounded text-center font-mono font-bold text-amber-400 py-0.5 text-[11px] focus:outline-none">
+                                <input type="number" id="imp-iibb" value="3.0" step="0.1" oninput="calcularTodo()" class="w-full bg-slate-900 border border-amber-500/50 rounded text-center font-mono font-bold text-amber-400 py-0.5 text-[11px] focus:outline-none">
                                 <span class="text-amber-400 font-bold">%</span>
                             </div>
                         </div>
@@ -455,8 +455,11 @@
     </div>
 
     <script>
-        let SB_URL = ""; let SB_KEY = ""; 
-        let chartIngenieriaInstance = null; let chartTotalInstance = null;
+        // --- 1. DECLARACIÓN DE VARIABLES DE ESTADO ---
+        let SB_URL = ""; 
+        let SB_KEY = ""; 
+        let chartIngenieriaInstance = null; 
+        let chartTotalInstance = null;
         let chartInstancesMap = {}; 
         let costoConsolidadoGlobal = 0;
         let globalG1 = 0; let globalG2 = 0; let globalG3 = 0; let globalG4 = 0;
@@ -466,10 +469,13 @@
         let preciosVentaUnitarios = { cosechadora: 0, arrancadora: 0, volquete11: 0, volquete8: 0 };
         let editandoCostos = { cosechadora: false, arrancadora: false, volquete11: false, volquete8: false };
 
-        document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById('fecha-base-global').value = new Date().toISOString().split('T')[0];
-            intentarConexionAutomatica();
-        });
+        // --- 2. FUNCIONES DE UI Y ESTADO DE CARGA (DECLARADAS AL PRINCIPIO) ---
+        function actualizarIndicadorStatus(colorClass, text) {
+            const dot = document.getElementById('status-dot');
+            const statusTxt = document.getElementById('status-text');
+            if (dot) dot.className = `w-2 h-2 rounded-full ${colorClass}`;
+            if (statusTxt) statusTxt.textContent = text;
+        }
 
         function aplicarEfectoBlur(idMaquina, activar) {
             const inputCosto = document.getElementById(`costo-${idMaquina}`);
@@ -478,6 +484,17 @@
             else inputCosto.classList.remove('blur-[4px]', 'opacity-40', 'select-none');
         }
 
+        function habilitarBotonesEdicionCostos(status) {
+            ["cosechadora", "arrancadora", "volquete11", "volquete8"].forEach(id => {
+                const btn = document.getElementById(`btn-edit-${id}`);
+                if(btn) {
+                    btn.disabled = !status;
+                    btn.innerHTML = status ? '<i class="fa-solid fa-pen"></i>' : '<i class="fa-solid fa-lock"></i>';
+                }
+            });
+        }
+
+        // --- 3. CONEXIONES SUPABASE Y LOCALSTORAGE ---
         async function intentarConexionAutomatica() {
             const cachedUrl = localStorage.getItem("maqui_sb_url");
             const cachedKey = localStorage.getItem("maqui_sb_key");
@@ -496,7 +513,7 @@
                     document.getElementById('setup-error-msg').classList.add('hidden');
                     habilitarBotonesEdicionCostos(true);
                     await descargarCostosPredeterminados();
-                    window.cargarHistorial();
+                    cargarHistorial();
                     calcularTodo();
                 } catch (err) {
                     actualizarIndicadorStatus("bg-rose-500", "Error de credenciales");
@@ -511,9 +528,7 @@
             }
         }
 
-        // --- ASIGNACIÓN DE FUNCIONES INTERACTIVAS AL CONTEXTO GLOBAL (window) ---
-
-        window.guardarConfiguracionManual = function() {
+        function guardarConfiguracionManual() {
             let urlInput = document.getElementById('setup-url').value.trim();
             const keyInput = document.getElementById('setup-key').value.trim();
             if (!urlInput || !keyInput) return alert("Por favor ingresá todos los campos.");
@@ -523,7 +538,7 @@
             intentarConexionAutomatica();
         }
 
-        window.saltarConexionOffline = function() {
+        function saltarConexionOffline() {
             SB_URL = ""; SB_KEY = "";
             actualizarIndicadorStatus("bg-amber-500", "Modo Offline / Simulación");
             document.getElementById('modal-conexion').classList.add('hidden');
@@ -544,13 +559,32 @@
             calcularTodo();
         }
 
-        window.abrirModalManual = function() {
+        function abrirModalManual() {
             document.getElementById('setup-url').value = localStorage.getItem("maqui_sb_url") || "";
             document.getElementById('setup-key').value = localStorage.getItem("maqui_sb_key") || "";
             document.getElementById('modal-conexion').classList.remove('hidden');
         }
 
-        window.toggleModificarCosto = async function(idMaquina) {
+        async function descargarCostosPredeterminados() {
+            if(!SB_URL) return;
+            try {
+                const res = await fetch(`${SB_URL}/rest/v1/configuracion_costos`, {
+                    method: 'GET',
+                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+                });
+                if(!res.ok) return;
+                const datos = await res.json();
+                datos.forEach(item => {
+                    const inputCosto = document.getElementById(`costo-${item.id}`);
+                    if(inputCosto && !editandoCostos[item.id]) {
+                        inputCosto.value = item.costo_unitario;
+                        aplicarEfectoBlur(item.id, true);
+                    }
+                });
+            } catch(e) {}
+        }
+
+        async function toggleModificarCosto(idMaquina) {
             const inputCosto = document.getElementById(`costo-${idMaquina}`);
             const btn = document.getElementById(`btn-edit-${idMaquina}`);
             if (!editandoCostos[idMaquina]) {
@@ -581,7 +615,8 @@
             }
         }
 
-        window.toggleMaquina = function(id) {
+        // --- 4. CÁLCULOS PRINCIPALES Y FLUJO DE CAJA ---
+        function toggleMaquina(id) {
             const chk = document.getElementById(`chk-${id}`);
             if (id !== "transporte") {
                 document.getElementById(`qty-${id}`).disabled = !chk.checked;
@@ -594,14 +629,7 @@
             calcularTodo();
         }
 
-        window.actualizarPrecioVentaFila = function(idMaquina) {
-            const inputVenta = document.getElementById(`venta-unit-${idMaquina}`);
-            if(!inputVenta) return;
-            preciosVentaUnitarios[idMaquina] = parseFloat(inputVenta.value) || 0;
-            calcularRentabilidadOnly();
-        }
-
-        window.calcularTodo = function() {
+        function calcularTodo() {
             costoConsolidadoGlobal = 0;
             globalG1 = 0; globalG2 = 0; globalG3 = 0; globalG4 = 0;
             cashflowTotalPorMes = {};
@@ -727,7 +755,7 @@
             renderizarGraficoDonutIngenieria(globalG1, globalG2, globalG3, globalG4);
             renderizarGraficoTotalConsolidado(arrayEtiq12Meses);
 
-            // Sincronizar inputs de venta cargados antes de renderizar la rentabilidad consolidada
+            // Sincronizar inputs de venta cargados
             maquinas.forEach(m => {
                 if (document.getElementById(`chk-${m.id}`).checked) {
                     const inputVenta = document.getElementById(`venta-unit-${m.id}`);
@@ -740,7 +768,14 @@
             calcularRentabilidadOnly();
         }
 
-        window.calcularRentabilidadOnly = function() {
+        function actualizarPrecioVentaFila(idMaquina) {
+            const inputVenta = document.getElementById(`venta-unit-${idMaquina}`);
+            if(!inputVenta) return;
+            preciosVentaUnitarios[idMaquina] = parseFloat(inputVenta.value) || 0;
+            calcularRentabilidadOnly();
+        }
+
+        function calcularRentabilidadOnly() {
             let ventaConsolidadaTotal = 0;
             let totalUnidadesActivas = 0;
             const maquinas = ["cosechadora", "arrancadora", "volquete11", "volquete8"];
@@ -760,7 +795,7 @@
                 fleteCosto = parseFloat(document.getElementById('costo-transporte').value) || 0;
             }
 
-            // --- LÓGICA DE IMPUESTOS Y COSTO EXTRA ---
+            // --- LÓGICA DE IMPUESTOS ---
             const postventaInput = document.getElementById('postventa-valor');
             const postventaFijoUsd = postventaInput ? (parseFloat(postventaInput.value) || 0) : 5000;
 
@@ -785,7 +820,7 @@
             const costoExtraConsolidado = totalImpuestosAdicionales + postventaFijoUsd;
             const costoTotalConsolidadoConImpuestos = costoConsolidadoGlobal + totalImpuestosAdicionales + postventaFijoUsd + fleteCosto;
 
-            // Actualizar bloques informativos de la columna lateral
+            // Actualizar bloques laterales
             document.getElementById('txt-monto-impuestos').textContent = `U$D ${Math.round(totalImpuestosAdicionales).toLocaleString('en-US')}`;
             document.getElementById('txt-costo-extra-total').textContent = `U$D ${Math.round(costoExtraConsolidado).toLocaleString('en-US')}`;
 
@@ -797,7 +832,7 @@
 
             document.getElementById('txt-venta-consolidada').textContent = `U$D ${Math.round(ventaConsolidadaTotal).toLocaleString('en-US')}`;
 
-            // --- ACTUALIZAR CADA FILA SIN BUGS ---
+            // --- ACTUALIZACIÓN SINCERA DE FILAS ---
             maquinas.forEach(id => {
                 const chk = document.getElementById(`chk-${id}`);
                 if (chk && chk.checked) {
@@ -805,15 +840,14 @@
                     const costoUnitarioFábrica = parseFloat(document.getElementById(`costo-${id}`).value) || 0;
                     const precioVentaUnitario = preciosVentaUnitarios[id] || 0;
 
-                    // Prorrateo equitativo de los costos fijos extras por cada máquina de la flota
                     const postventaProrrateadaPorUnidad = totalUnidadesActivas > 0 ? (postventaFijoUsd / totalUnidadesActivas) : 0;
                     const fleteProrrateadoPorUnidad = totalUnidadesActivas > 0 ? (fleteCosto / totalUnidadesActivas) : 0;
 
-                    // El impuesto se aplica directamente sobre el costo base de producción unitario
+                    // El impuesto se calcula y se aplica sobre el costo base de producción
                     const porcentajeImpuestosSumados = (impMunicipalPct + impFacturacionPct + impCheckPct + impComexPct + impIibbPct) / 100;
                     const impuestoUnitarioCalculado = costoUnitarioFábrica * porcentajeImpuestosSumados;
 
-                    // Costo unitario real consolidado para este modelo
+                    // Costo real total por unidad consolidando impuestos y postventa
                     const costoUnitarioConsolidado = costoUnitarioFábrica + impuestoUnitarioCalculado + postventaProrrateadaPorUnidad + fleteProrrateadoPorUnidad;
 
                     const txtMargenFila = document.getElementById(`txt-margen-fila-${id}`);
@@ -844,11 +878,9 @@
                 return;
             }
 
-            // Margen comercial base considerando impuestos adicionales y fletes
             const margenComercialGlobal = ((ventaConsolidadaTotal - costoTotalConsolidadoConImpuestos) / ventaConsolidadaTotal) * 100;
             document.getElementById('txt-margen-operacion').textContent = `${margenComercialGlobal.toFixed(2)}%`;
 
-            // Financiación Bancaria (Tasa absorbida por la fábrica)
             const pctFinan = parseFloat(document.getElementById('finan-pct').value) || 0;
             const tasaAbsorvida = parseFloat(document.getElementById('finan-tasa').value) || 0;
             
@@ -861,7 +893,8 @@
             document.getElementById('txt-utilidad-total-usd').textContent = `U$D ${Math.round(utilidadFinalNetadeTasa).toLocaleString('en-US')}`;
         }
 
-        window.guardarCotizacion = async function() {
+        // --- 5. REPORTES Y BD ---
+        async function guardarCotizacion() {
             if (!SB_URL || costoConsolidadoGlobal <= 0) return alert("Modo offline activo: No se puede archivar en lote.");
             let combo = []; let totalVentaAux = 0;
             ["cosechadora", "arrancadora", "volquete11", "volquete8"].forEach(m => {
@@ -881,11 +914,11 @@
             };
             try {
                 await fetch(`${SB_URL}/rest/v1/costos_maquinaria`, { method: 'POST', headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                alert("Cotización guardada."); window.cargarHistorial();
+                alert("Cotización guardada."); cargarHistorial();
             } catch (err) {}
         }
 
-        window.cargarHistorial = async function() {
+        async function cargarHistorial() {
             if(!SB_URL) return;
             try {
                 const res = await fetch(`${SB_URL}/rest/v1/costos_maquinaria?order=fecha_calculo.desc`, { method: 'GET', headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } });
@@ -897,6 +930,7 @@
             } catch (err) {}
         }
 
+        // --- 6. RENDER DE GRÁFICOS ---
         function renderizarGraficoTotalConsolidado(etiquetas12Meses) {
             const ctx = document.getElementById('chartCashFlowTotal').getContext('2d');
             if (chartTotalInstance) chartTotalInstance.destroy();
