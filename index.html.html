@@ -469,7 +469,7 @@
         let preciosVentaUnitarios = { cosechadora: 0, arrancadora: 0, volquete11: 0, volquete8: 0 };
         let editandoCostos = { cosechadora: false, arrancadora: false, volquete11: false, volquete8: false };
 
-        // --- 2. FUNCIONES DE UI Y ESTADO DE CARGA (DECLARADAS AL PRINCIPIO) ---
+        // --- 2. FUNCIONES DE UI Y ESTADO DE CARGA ---
         function actualizarIndicadorStatus(colorClass, text) {
             const dot = document.getElementById('status-dot');
             const statusTxt = document.getElementById('status-text');
@@ -615,7 +615,7 @@
             }
         }
 
-        // --- 4. CÁLCULOS PRINCIPALES Y FLUJO DE CAJA ---
+        // --- 4. CÁLCULOS PRINCIPALES Y PARSEO DE FECHAS (CORREGIDO) ---
         function toggleMaquina(id) {
             const chk = document.getElementById(`chk-${id}`);
             if (id !== "transporte") {
@@ -641,11 +641,22 @@
                 { id: "volquete8", label: "Volquete 8T" }
             ];
 
-            const fechaBaseStr = document.getElementById('fecha-base-global').value;
+            let fechaBaseStr = document.getElementById('fecha-base-global').value;
+            if (!fechaBaseStr) {
+                fechaBaseStr = new Date().toISOString().split('T')[0];
+                document.getElementById('fecha-base-global').value = fechaBaseStr;
+            }
+
+            // Desglose manual de fecha súper robusto para evitar NaN en cualquier navegador
+            const partesFecha = fechaBaseStr.split('-');
+            const anioBase = parseInt(partesFecha[0], 10);
+            const mesBase = parseInt(partesFecha[1], 10) - 1; // Base 0 en JS
+            const diaBase = parseInt(partesFecha[2], 10) || 1;
+
             let arrayEtiq12Meses = [];
             for (let i = 0; i < 12; i++) {
-                let fBase = new Date(fechaBaseStr + "T00:00:00");
-                fBase.setMonth(fBase.getMonth() + i);
+                // Crear la fecha de forma nativa e independiente del navegador
+                let fBase = new Date(anioBase, mesBase + i, diaBase);
                 let tagMes = `${nombresMeses[fBase.getMonth()]} ${String(fBase.getFullYear()).slice(-2)}`;
                 arrayEtiq12Meses.push(tagMes);
                 cashflowTotalPorMes[tagMes] = 0;
@@ -696,8 +707,7 @@
                     const tercio = mesesPlazo / 3;
 
                     for (let i = 0; i < 12; i++) {
-                        let f = new Date(fechaBaseStr + "T00:00:00");
-                        f.setMonth(f.getMonth() + i);
+                        let f = new Date(anioBase, mesBase + i, diaBase);
                         let tagMes = `${nombresMeses[f.getMonth()]} ${String(f.getFullYear()).slice(-2)}`;
 
                         let erogacionMesActual = 0;
@@ -832,7 +842,7 @@
 
             document.getElementById('txt-venta-consolidada').textContent = `U$D ${Math.round(ventaConsolidadaTotal).toLocaleString('en-US')}`;
 
-            // --- ACTUALIZACIÓN SINCERA DE FILAS ---
+            // --- ACTUALIZACIÓN DE FILAS ---
             maquinas.forEach(id => {
                 const chk = document.getElementById(`chk-${id}`);
                 if (chk && chk.checked) {
@@ -843,11 +853,9 @@
                     const postventaProrrateadaPorUnidad = totalUnidadesActivas > 0 ? (postventaFijoUsd / totalUnidadesActivas) : 0;
                     const fleteProrrateadoPorUnidad = totalUnidadesActivas > 0 ? (fleteCosto / totalUnidadesActivas) : 0;
 
-                    // El impuesto se calcula y se aplica sobre el costo base de producción
                     const porcentajeImpuestosSumados = (impMunicipalPct + impFacturacionPct + impCheckPct + impComexPct + impIibbPct) / 100;
                     const impuestoUnitarioCalculado = costoUnitarioFábrica * porcentajeImpuestosSumados;
 
-                    // Costo real total por unidad consolidando impuestos y postventa
                     const costoUnitarioConsolidado = costoUnitarioFábrica + impuestoUnitarioCalculado + postventaProrrateadaPorUnidad + fleteProrrateadoPorUnidad;
 
                     const txtMargenFila = document.getElementById(`txt-margen-fila-${id}`);
@@ -952,6 +960,15 @@
                 options: { responsive: true, cutout: '72%', plugins: { legend: { display: false } } }
             });
         }
+
+        // --- 7. INICIALIZACIÓN AL CARGAR ---
+        document.addEventListener("DOMContentLoaded", () => {
+            const inputFecha = document.getElementById('fecha-base-global');
+            if (inputFecha) {
+                inputFecha.value = new Date().toISOString().split('T')[0];
+            }
+            intentarConexionAutomatica();
+        });
     </script>
 </body>
 </html>
